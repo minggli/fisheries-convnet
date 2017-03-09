@@ -11,6 +11,7 @@ _mailinglist
 .tox
 .cache/
 .idea/
+venv/
 app/data/
 
 # Coverage reports
