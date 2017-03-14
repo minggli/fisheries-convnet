@@ -8,16 +8,16 @@ import tensorflow as tf
 
 from sklearn import preprocessing
 
-from settings import IMAGE_PATH, IMAGE_SHAPE
+from settings import IMAGE_PATH, IMAGE_SHAPE, BATCH_SIZE
 
 
-def file_system(directory):
+def folder_traverse(root_dir):
     """map all image-only files in a folder"""
-    if not os.path.exists(directory):
+    if not os.path.exists(root_dir):
         raise RuntimeError('directory doesn\'t exist')
     file_structure = dict()
     # using os.walk instead of new os.scandir for backward compatibility reason
-    for root, _, files in os.walk(directory):
+    for root, _, files in os.walk(root_dir):
         image_list = [i for i in files if i.endswith('.jpg')]
         if image_list:
             file_structure[root] = image_list
@@ -35,7 +35,7 @@ def generate_data_skeleton(file_structure):
     return df['filename'].tolist(), df['labels'].tolist()
 
 
-def make_queue(paths_to_image, labels, num_epochs):
+def make_queue(paths_to_image, labels, num_epochs=None):
     """returns an Ops Tensor with queued image and label pair"""
     images = tf.convert_to_tensor(paths_to_image, dtype=tf.string)
     labels = tf.convert_to_tensor(labels, dtype=tf.string)
@@ -61,6 +61,8 @@ def decode_transform(input_queue, shape=IMAGE_SHAPE, standardize=True):
         target_width=shape[1]
         )
 
+    resized_image_content.set_shape(IMAGE_SHAPE)
+
     if standardize:
         # TODO how to standardize queued image data
         pass
@@ -68,3 +70,9 @@ def decode_transform(input_queue, shape=IMAGE_SHAPE, standardize=True):
     label_queue = input_queue[1]
 
     return resized_image_content, label_queue
+
+def batch_generator(image, label, batch_size=BATCH_SIZE):
+    return tf.train.batch(
+    [image, label],
+    batch_size = batch_size
+    )
