@@ -32,7 +32,7 @@ def generate_data_skeleton(file_structure):
     df.rename(columns={'index': 'filename', 0: 'labels'}, inplace=True)
     df.sort_values(by=['labels', 'filename'], inplace=True)
     df.reset_index(inplace=True, drop=True)
-    return df['filename'].tolist(), df['labels'].tolist()
+    return np.array(df['filename']), np.array(df['labels'])
 
 
 def make_queue(paths_to_image, labels, num_epochs=None):
@@ -73,3 +73,13 @@ def decode_transform(input_queue, shape=IMAGE_SHAPE, standardize=True):
 
 def batch_generator(image, label, batch_size=BATCH_SIZE):
     return tf.train.batch([image, label], batch_size = batch_size)
+
+
+def pipe(root_dir):
+    images_array, label_array = \
+        generate_data_skeleton(folder_traverse(root_dir))
+    resized_image_queue, label_queue = \
+        decode_transform(make_queue(images_array, label_array))
+    image_batch, label_batch = \
+        batch_generator(resized_image_queue, label_queue)
+    return image_batch, label_batch

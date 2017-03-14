@@ -33,6 +33,7 @@ class ConvolutionalNeuralNet(object):
 
     @property
     def x(self):
+        """feature set"""
         return tf.placeholder(
             dtype=tf.float32, shape=[None, self.shape[1], self.shape[2]],
             name='feature'
@@ -40,6 +41,7 @@ class ConvolutionalNeuralNet(object):
 
     @property
     def _y(self):
+        """true label, in one hot format"""
         return tf.placeholder(
             dtype=tf.float32, shape=[None, self.shape[2]], name='label'
         )
@@ -50,8 +52,7 @@ class ConvolutionalNeuralNet(object):
         b = self.__class__.bias_variable(shape=hyperparams[1])
 
         hypothesis_conv = self.__class__.non_linearity(func)(
-            self.__class__.con2d(x, W) + b)
-
+            self.__class__.conv2d(x, W) + b)
         hypothesis_pool = self.__class__.max_pool(hypothesis_conv)
         return hypothesis_pool
 
@@ -75,5 +76,6 @@ class ConvolutionalNeuralNet(object):
         """final read out layer"""
         W = self.__class__.weight_variable(shape=hyperparams[0])
         b = self.__class__.bias_variable(shape=hyperparams[1])
+        
         logits = tf.matmul(x, W) + b
         return logits
