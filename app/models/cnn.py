@@ -2,7 +2,7 @@ import tensorflow as tf
 
 class ConvolutionalNeuralNet(object):
 
-    def __init__(self, shape, hyperparams):
+    def __init__(self, shape):
         """shape: [n_samples, channels, n_features]"""
         self.shape = shape
 
@@ -28,20 +28,20 @@ class ConvolutionalNeuralNet(object):
     def non_linearity(activation_func):
         if activation_func == 'sigmoid':
             return tf.nn.sigmoid
-        elif activation_func = 'relu':
+        elif activation_func == 'relu':
             return tf.nn.relu
 
     @property
     def x(self):
         return tf.placeholder(
             dtype=tf.float32, shape=[None, self.shape[1], self.shape[2]],
-            name='feature')
+            name='feature'
         )
 
     @property
     def _y(self):
         return tf.placeholder(
-            dtype=tf.float32, shape=[None, self.shape[2], name='label']
+            dtype=tf.float32, shape=[None, self.shape[2]], name='label'
         )
 
     def add_conv_layer(self, x, hyperparams, func='relu'):
@@ -61,7 +61,7 @@ class ConvolutionalNeuralNet(object):
         b = self.__class__.bias_variable(shape=hyperparams[1])
 
         flat_x = tf.reshape(x, hyperparams[2])
-        hypothesis =
+        hypothesis = \
             self.__class__.non_linearity(func)(tf.matmul(flat_x, W) + b)
         return hypothesis
 
