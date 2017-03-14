@@ -72,7 +72,4 @@ def decode_transform(input_queue, shape=IMAGE_SHAPE, standardize=True):
     return resized_image_content, label_queue
 
 def batch_generator(image, label, batch_size=BATCH_SIZE):
-    return tf.train.batch(
-    [image, label],
-    batch_size = batch_size
-    )
+    return tf.train.batch([image, label], batch_size = batch_size)
