@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 import tensorflow as tf
 
 class ConvolutionalNeuralNet(object):
@@ -22,6 +24,7 @@ class ConvolutionalNeuralNet(object):
 
     @staticmethod
     def max_pool(x):
+        """kernal size 2x2 and slide by 2 pixels each time"""
         return tf.nn.max_pool(x, ksize=[1, 2, 2, 1], strides=[1, 2, 2, 1], padding='SAME')
 
     @staticmethod
@@ -34,10 +37,10 @@ class ConvolutionalNeuralNet(object):
     @property
     def x(self):
         """feature set"""
-        return tf.placeholder(
+        return tf.reshape(tf.placeholder(
             dtype=tf.float32, shape=[None, self.shape[1], self.shape[2]],
             name='feature'
-        )
+        ), [-1, self.shape[0], self.shape[1], self.shape[2]])
 
     @property
     def _y(self):
@@ -46,36 +49,40 @@ class ConvolutionalNeuralNet(object):
             dtype=tf.float32, shape=[None, self.shape[2]], name='label'
         )
 
-    def add_conv_layer(self, x, hyperparams, func='relu'):
+    def add_conv_layer(self, input_layer, hyperparams, func='relu'):
         """Convolution Layer with hyperparamters and activation_func"""
         W = self.__class__.weight_variable(shape=hyperparams[0])
         b = self.__class__.bias_variable(shape=hyperparams[1])
 
         hypothesis_conv = self.__class__.non_linearity(func)(
-            self.__class__.conv2d(x, W) + b)
-        hypothesis_pool = self.__class__.max_pool(hypothesis_conv)
+            self.__class__.conv2d(input_layer, W) + b)
+        return hypothesis_conv
+
+    def add_pooling_layer(self, input_layer):
+        """max pooling layer to reduce overfitting"""
+        hypothesis_pool = self.__class__.max_pool(input_layer)
         return hypothesis_pool
 
-    def add_dense_layer(self, x, hyperparams, func='relu'):
+    def add_dense_layer(self, input_layer, hyperparams, func='relu'):
         """Densely Connected Layer with hyperparamters and activation_func"""
         W = self.__class__.weight_variable(shape=hyperparams[0])
         b = self.__class__.bias_variable(shape=hyperparams[1])
 
-        flat_x = tf.reshape(x, hyperparams[2])
+        flat_x = tf.reshape(input_layer, hyperparams[2])
         hypothesis = \
             self.__class__.non_linearity(func)(tf.matmul(flat_x, W) + b)
         return hypothesis
 
-    def add_drop_out_layer(self, x):
+    def add_drop_out_layer(self, input_layer):
         """drop out layer to reduce overfitting"""
         keep_prob = tf.placeholder(dtype=tf.float32)
-        hypothesis_drop = tf.nn.dropout(x, keep_prob)
+        hypothesis_drop = tf.nn.dropout(input_layer, keep_prob)
         return hypothesis_drop
 
-    def add_read_out_layer(self, x, hyperparams):
+    def add_read_out_layer(self, input_layer, hyperparams):
         """final read out layer"""
         W = self.__class__.weight_variable(shape=hyperparams[0])
         b = self.__class__.bias_variable(shape=hyperparams[1])
-        
-        logits = tf.matmul(x, W) + b
+
+        logits = tf.matmul(input_layer, W) + b
         return logits
