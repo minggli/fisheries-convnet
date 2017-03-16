@@ -15,7 +15,7 @@ n = 8
 
 g = tf.Graph()
 # initiate a new graph, abandoning previous graph.
-with tf.Session().as_default() as sess:
+with tf.Session() as sess:
 
     cnn = ConvolutionalNeuralNet(shape=(None, d, m))
 
@@ -61,7 +61,7 @@ with tf.Session().as_default() as sess:
     correct_prediction = tf.equal(tf.argmax(read_out, 1), tf.argmax(y_placeholder, 1))
     accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
 
-    p = data_pipe(root_dir=IMAGE_PATH + 'train/', test_size=.1)
+    p = data_pipe(root_dir=IMAGE_PATH + 'train/', test_size=.2)
 
 def train(pipeline, optimiser, metric, loss):
     """train neural network with batched data feed."""
