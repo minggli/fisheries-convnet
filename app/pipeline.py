@@ -9,7 +9,7 @@ import tensorflow as tf
 
 from sklearn import preprocessing, model_selection
 
-from .settings import IMAGE_PATH, IMAGE_SHAPE, BATCH_SIZE
+from .settings import IMAGE_PATH, IMAGE_SHAPE, BATCH_SIZE, NUM_EPOCHS
 
 
 def folder_traverse(root_dir):
@@ -33,7 +33,7 @@ def generate_data_skeleton(file_structure, test_size=None):
     df.rename(columns={'index': 'filename', 0: 'species'}, inplace=True)
     df.sort_values(by=['species', 'filename'], inplace=True)
     df.reset_index(inplace=True, drop=True)
-    df['labels'] = pd.Categorical(df['species']).codes
+    df['labels'] = df['species'].astype('category').cat.codes
 
     X, y = np.array(df['filename']), np.array(df['labels'])
 
@@ -96,13 +96,14 @@ def decode_transform(input_queue, shape=IMAGE_SHAPE, standardize=True):
 
 
 def batch_generator(image, label, batch_size=BATCH_SIZE):
+    """turn data queue into batches"""
     return tf.train.batch([image, label], batch_size = batch_size)
 
 
-def datapipe(root_dir, test_size=None):
+def data_pipe(root_dir, num_epochs=NUM_EPOCHS, test_size=None):
+    """so one-in-all from data directory to iterated data feed in batches"""
     train_images_array, train_label_array, test_images_array, test_label_array = \
         generate_data_skeleton(folder_traverse(root_dir), test_size=test_size)
-
     train_resized_image_queue, train_label_queue = \
         decode_transform(make_queue(train_images_array, train_label_array))
     train_image_batch, train_label_batch = \

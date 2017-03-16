@@ -5,8 +5,8 @@ import operator
 import functools
 import tensorflow as tf
 
-from app.models.cnn import ConvolutionalNeuralNet
 from app.settings import IMAGE_PATH, IMAGE_SHAPE
+from app.models.cnn import ConvolutionalNeuralNet
 from app.pipeline import datapipe
 
 m = functools.reduce(operator.mul, IMAGE_SHAPE[:2], 1)
@@ -48,9 +48,7 @@ fully_connected_layer_2 = cnn.add_dense_layer(
                             [[9 * 16 * 288, 1024], [1024], [-1, 9 * 16 * 288]],
                             func='relu'
                             )
-
 drop_out_layer_1 = cnn.add_drop_out_layer(fully_connected_layer_2)
-
 read_out = cnn.add_read_out_layer(drop_out_layer_1, [[1024, 8], [8]])
 
 # train
@@ -63,3 +61,13 @@ correct_prediction = tf.equal(tf.argmax(read_out, 1), tf.argmax(y_placeholder, 1
 accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
 
 initializer = tf.global_variables_initializer()
+
+input_image_directory = IMAGE_PATH +  'train/'
+
+p = data_pipe(input_image_directory, test_size=.1)
+
+
+def optimise(pipeline):
+X_image_batch, X_label_batch, y_image_batch, y_label_batch
+
+optimiser.run(feed_dict={x: x_batch, y_: y_batch, keep_prob_1: drop_out[0]})
