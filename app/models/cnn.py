@@ -2,6 +2,7 @@
 
 import tensorflow as tf
 
+
 class ConvolutionalNeuralNet(object):
 
     def __init__(self, shape):
@@ -38,16 +39,21 @@ class ConvolutionalNeuralNet(object):
     def x(self):
         """feature set"""
         return tf.reshape(tf.placeholder(
-            dtype=tf.float32, shape=[None, self.shape[1], self.shape[2]],
+            dtype=tf.float32,
+            shape=self.shape,
             name='feature'
-        ), [-1, self.shape[0], self.shape[1], self.shape[2]])
+        ), [-1, int(self.shape[1]**.5), int(self.shape[1]**.5), int(self.shape[1])])
 
     @property
     def _y(self):
         """true label, in one hot format"""
         return tf.placeholder(
-            dtype=tf.float32, shape=[None, self.shape[2]], name='label'
+            dtype=tf.float32, shape=[None, 8], name='label'
         )
+
+    @property
+    def keep_prob(self):
+        return tf.placeholder(dtype=tf.float32)
 
     def add_conv_layer(self, input_layer, hyperparams, func='relu'):
         """Convolution Layer with hyperparamters and activation_func"""
@@ -75,12 +81,11 @@ class ConvolutionalNeuralNet(object):
 
     def add_drop_out_layer(self, input_layer):
         """drop out layer to reduce overfitting"""
-        keep_prob = tf.placeholder(dtype=tf.float32)
-        hypothesis_drop = tf.nn.dropout(input_layer, keep_prob)
+        hypothesis_drop = tf.nn.dropout(input_layer, self.keep_prob)
         return hypothesis_drop
 
     def add_read_out_layer(self, input_layer, hyperparams):
-        """final read out layer"""
+        """read out layer"""
         W = self.__class__.weight_variable(shape=hyperparams[0])
         b = self.__class__.bias_variable(shape=hyperparams[1])
 
