@@ -25,7 +25,7 @@ class ConvolutionalNeuralNet(object):
 
     @staticmethod
     def max_pool(x):
-        """kernal size 2x2 and slide by 2 pixels each time"""
+        """max pooling with kernal size 2x2 and slide by 2 pixels each time"""
         return tf.nn.max_pool(x, ksize=[1, 2, 2, 1], strides=[1, 2, 2, 1], padding='SAME')
 
     @staticmethod

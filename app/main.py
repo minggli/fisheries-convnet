@@ -19,3 +19,5 @@ if __name__ == '__main__':
         image_batch, label_batch, _, _ = \
             data_pipe(test_image_folder, test_size=.1)
         queue_initailizer = tf.train.start_queue_runners()
+        image = image_batch.eval()
+        print(image.shape)
