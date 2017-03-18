@@ -59,24 +59,29 @@ train_step = tf.train.AdamOptimizer().minimize(loss)
 correct_prediction = tf.equal(tf.argmax(read_out, 1), tf.argmax(_y, 1))
 accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
 
+# prepare data feed
 train_file_array, train_label_array, valid_file_array, valid_label_array = \
         generate_data_skeleton(root_dir=IMAGE_PATH + 'train', valid_size=.15)
 
 train_image_batch, train_label_batch = \
-                data_pipe(train_file_array, train_label_array, num_epochs=None)
+        data_pipe(train_file_array, train_label_array, num_epochs=None)
 valid_image_batch, valid_label_batch = \
-                data_pipe(valid_file_array, valid_label_array, num_epochs=1)
-
-initializer = tf.group(tf.local_variables_initializer(), tf.global_variables_initializer())
+        data_pipe(valid_file_array, valid_label_array, num_epochs=1)
 
 test_file_array, _ = \
         generate_data_skeleton(root_dir=IMAGE_PATH + 'test_stg1', valid_size=None)
 test_image_batch, _ = \
         data_pipe(test_file_array, _, num_epochs=1, shuffle=False)
 
-# with sess:
-#     sess.run(initializer)
-#     whole_valid_images, whole_valid_labels = \
-#             generate_validation_set(sess, valid_image_batch, valid_label_batch)
-#     train(sess, train_step, accuracy, loss)
-#     save_sess(sess, path=MODEL_PATH)
+initializer = tf.group(
+                    tf.local_variables_initializer(),
+                    tf.global_variables_initializer()
+                )
+
+with sess:
+    sess.run(initializer)
+    whole_valid_images, whole_valid_labels = \
+            generate_validation_set(sess, valid_image_batch, valid_label_batch)
+    train(sess, x, _y, train_image_batch, train_label_batch, whole_valid_images,
+                whole_valid_labels, train_step, accuracy, loss)
+    # save_sess(sess, path=MODEL_PATH)
