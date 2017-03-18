@@ -47,14 +47,14 @@ def generate_data_skeleton(root_dir, test_size=None):
         return X, y
 
 
-def make_queue(paths_to_image, labels, num_epochs=NUM_EPOCHS):
+def make_queue(paths_to_image, labels, num_epochs=NUM_EPOCHS, shuffle=True):
     """returns an Ops Tensor with queued image and label pair"""
     images = tf.convert_to_tensor(paths_to_image, dtype=tf.string)
     labels = tf.convert_to_tensor(labels, dtype=tf.uint8)
     input_queue = tf.train.slice_input_producer(
         tensor_list=[images, labels],
         num_epochs=num_epochs,
-        shuffle=True
+        shuffle=shuffle
         )
     return input_queue
 
@@ -97,24 +97,34 @@ def decode_transform(input_queue, shape=IMAGE_SHAPE, standardize=True):
     return resize_image_content, one_hot_label_queue
 
 
-def batch_generator(image, label, batch_size=BATCH_SIZE):
+def batch_generator(image, label, batch_size=BATCH_SIZE, shuffle=True):
     """turn data queue into batches"""
-    return tf.train.shuffle_batch(
-            tensors = [image, label],
-            batch_size = batch_size,
-            capacity = 1e4,
-            min_after_dequeue = 200,
-            num_threads = 4,
-            allow_smaller_final_batch = True
-            )
+    if shuffle:
+        return tf.train.shuffle_batch(
+                tensors = [image, label],
+                batch_size = batch_size,
+                num_threads = 4,
+                capacity = 1e4,
+                min_after_dequeue = 200,
+                allow_smaller_final_batch = True
+                )
+    elif not shuffle:
+        return tf.train.batch(
+                tensors = [image, label],
+                batch_size = batch_size,
+                num_threads = 4,
+                capacity = 1e4,
+                allow_smaller_final_batch = True
+                )
 
 
-def data_pipe(paths_to_image, labels, num_epochs=NUM_EPOCHS):
+def data_pipe(paths_to_image, labels, num_epochs=NUM_EPOCHS, shuffle=True):
     """so one-in-all from data directory to iterated data feed in batches"""
 
     resized_image_queue, label_queue = \
-        decode_transform(make_queue(paths_to_image, labels, num_epochs=num_epochs))
+        decode_transform(make_queue(
+            paths_to_image, labels, num_epochs=num_epochs, shuffle=shuffle))
     image_batch, label_batch = \
-        batch_generator(resized_image_queue, label_queue)
+        batch_generator(resized_image_queue, label_queue, shuffle=shuffle)
 
     return image_batch, label_batch

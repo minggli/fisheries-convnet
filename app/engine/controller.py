@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-
+import os
 import tensorflow as tf
 
 
@@ -43,3 +43,12 @@ def train(sess, optimiser, metric, loss):
 
     coord.request_stop()
     coord.join(threads)
+
+
+def save_sess(sess, path):
+    """save hard trained model for predicting"""
+    saver = tf.train.Saver()
+    if not os.path.exists(path):
+        os.makedirs(path)
+    save_path = saver.save(sess, path + "model.ckpt")
+    print("Model saved in: {0}".format(save_path))

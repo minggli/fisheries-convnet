@@ -6,7 +6,7 @@ import functools
 import numpy as np
 import tensorflow as tf
 
-from app.settings import IMAGE_PATH, IMAGE_SHAPE
+from app.settings import IMAGE_PATH, IMAGE_SHAPE, MODEL_PATH
 from app.models.cnn import ConvolutionalNeuralNet
 from app.pipeline import data_pipe, generate_data_skeleton
 
@@ -69,8 +69,14 @@ valid_image_batch, valid_label_batch = \
 
 initializer = tf.group(tf.local_variables_initializer(), tf.global_variables_initializer())
 
+test_file_array, _ = \
+        generate_data_skeleton(root_dir=IMAGE_PATH + 'test_stg1/', test_size=None)
+test_image_batch, _ = \
+        data_pipe(test_file_array, _, num_epochs=1, shuffle=False)
+
 with sess:
     sess.run(initializer)
     whole_valid_images, whole_valid_labels = \
             generate_validation_set(sess, valid_image_batch, valid_label_batch)
     train(sess, train_step, accuracy, loss)
+    save_sess(sess, path=MODEL_PATH)
