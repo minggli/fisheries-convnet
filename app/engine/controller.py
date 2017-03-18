@@ -27,17 +27,17 @@ def train(sess, optimiser, metric, loss):
     threads = tf.train.start_queue_runners(coord=coord)
 
     for global_step in range(2):
-        train_image, train_valid = sess.run([train_image_batch, train_label_batch])
-        optimiser.run(feed_dict={x: train_image, _y: train_valid})
+        train_image, train_label = sess.run([train_image_batch, train_label_batch])
+        optimiser.run(feed_dict={x: train_image, _y: train_label})
         #, keep_prob: .5})
 
         if global_step % 5 == 0:
             valid_accuracy, loss_score = \
-                sess.run([metric, loss], feed_dict={
-                                            x: whole_valid_images,
-                                            _y: whole_valid_labels
-                                            # keep_prob: .5
-                                            })
+                sess.run(
+                        [metric, loss],
+                        feed_dict={x: whole_valid_images, _y: whole_valid_labels}
+                                        # keep_prob: .5}
+                        )
             print("step {0}, validation accuracy {1:.4f}, loss {2:.4f}".
                                 format(global_step, valid_accuracy, loss_score))
 

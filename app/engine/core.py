@@ -36,15 +36,15 @@ conv_layer_4 = cnn.add_conv_layer(conv_layer_3, [[5, 5, 48, 48], [48]], func='re
 # (36, 64, 3 * 48)
 max_pool_2 = cnn.add_pooling_layer(conv_layer_4)
 # (18, 32, 3 * 48)
-# conv_layer_5 = cnn.add_conv_layer(max_pool_2, [[5, 5, 48, 96], [96]], func='sigmoid')
-# # (18, 32, 3 * 96)
-# conv_layer_6 = cnn.add_conv_layer(conv_layer_5, [[5, 5, 96, 96], [96]], func='relu')
-# # (18, 32, 3 * 96)
-# max_pool_3 = cnn.add_pooling_layer(conv_layer_6)
-# # (9, 16, 3 * 96)
+conv_layer_5 = cnn.add_conv_layer(max_pool_2, [[5, 5, 48, 96], [96]], func='sigmoid')
+# (18, 32, 3 * 96)
+conv_layer_6 = cnn.add_conv_layer(conv_layer_5, [[5, 5, 96, 96], [96]], func='relu')
+# (18, 32, 3 * 96)
+max_pool_3 = cnn.add_pooling_layer(conv_layer_6)
+# (9, 16, 3 * 96)
 fully_connected_layer_1 = cnn.add_dense_layer(
-                            max_pool_2,
-                            [[18 * 32 * 48, 1024], [1024], [-1, 18 * 32 * 48]],
+                            max_pool_3,
+                            [[9 * 16 * 96, 1024], [1024], [-1, 9 * 16 * 96]],
                             func='relu'
                             )
 # drop_out_layer_1 = cnn.add_drop_out_layer(fully_connected_layer_2)
