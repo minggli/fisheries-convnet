@@ -3,11 +3,14 @@
 
 import operator
 import functools
+import numpy as np
 import tensorflow as tf
 
 from app.settings import IMAGE_PATH, IMAGE_SHAPE
 from app.models.cnn import ConvolutionalNeuralNet
-from app.pipeline import data_pipe
+from app.pipeline import data_pipe, generate_data_skeleton
+
+from .controller import generate_validation_set, train
 
 m = functools.reduce(operator.mul, IMAGE_SHAPE[:2], 1)
 d = 3
@@ -33,15 +36,15 @@ conv_layer_4 = cnn.add_conv_layer(conv_layer_3, [[5, 5, 48, 48], [48]], func='re
 # (36, 64, 3 * 48)
 max_pool_2 = cnn.add_pooling_layer(conv_layer_4)
 # (18, 32, 3 * 48)
-conv_layer_5 = cnn.add_conv_layer(max_pool_2, [[5, 5, 48, 96], [96]], func='sigmoid')
-# (18, 32, 3 * 96)
-conv_layer_6 = cnn.add_conv_layer(conv_layer_5, [[5, 5, 96, 96], [96]], func='relu')
-# (18, 32, 3 * 96)
-max_pool_3 = cnn.add_pooling_layer(conv_layer_6)
-# (9, 16, 3 * 96)
+# conv_layer_5 = cnn.add_conv_layer(max_pool_2, [[5, 5, 48, 96], [96]], func='sigmoid')
+# # (18, 32, 3 * 96)
+# conv_layer_6 = cnn.add_conv_layer(conv_layer_5, [[5, 5, 96, 96], [96]], func='relu')
+# # (18, 32, 3 * 96)
+# max_pool_3 = cnn.add_pooling_layer(conv_layer_6)
+# # (9, 16, 3 * 96)
 fully_connected_layer_1 = cnn.add_dense_layer(
-                            max_pool_3,
-                            [[9 * 16 * 96, 1024], [1024], [-1, 9 * 16 * 96]],
+                            max_pool_2,
+                            [[18 * 32 * 48, 1024], [1024], [-1, 18 * 32 * 48]],
                             func='relu'
                             )
 # drop_out_layer_1 = cnn.add_drop_out_layer(fully_connected_layer_2)
@@ -56,36 +59,18 @@ train_step = tf.train.AdamOptimizer().minimize(loss)
 correct_prediction = tf.equal(tf.argmax(read_out, 1), tf.argmax(_y, 1))
 accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
 
-feed = data_pipe(root_dir=IMAGE_PATH + 'train/LAG', test_size=.1)
+train_file_array, train_label_array, valid_file_array, valid_label_array = \
+        generate_data_skeleton(root_dir=IMAGE_PATH + 'train/', test_size=.15)
 
-initializer = tf.global_variables_initializer()
+train_image_batch, train_label_batch = \
+                data_pipe(train_file_array, train_label_array, num_epochs=None)
+valid_image_batch, valid_label_batch = \
+                data_pipe(valid_file_array, valid_label_array, num_epochs=1)
 
-
-def train(pipeline, optimiser, metric, loss):
-    """train neural network with batched data feed."""
-    train_image_batch, train_label_batch, valid_image_batch, valid_label_batch = pipeline
-    queue_initailizer = tf.train.start_queue_runners()
-
-    for n in range(10):
-
-        optimiser.run(feed_dict={
-                x: train_image_batch.eval(),
-                _y: train_label_batch.eval()
-                # p_placeholder: .5
-                }
-            )
-
-        if n % 5 == 0:
-            valid_accuracy, loss_score = sess.run([metric, loss], feed_dict={
-                        x: valid_image_batch.eval(),
-                        _y: valid_label_batch.eval()
-                        # keep_prob: .5
-                    })
-            print("step {0}, validation accuracy {1:.4f}, loss {2:.4f}".
-                                        format(n, valid_accuracy, loss_score))
-
-    return None
+initializer = tf.group(tf.local_variables_initializer(), tf.global_variables_initializer())
 
 with sess:
     sess.run(initializer)
-    train(feed, train_step, accuracy, loss)
+    whole_valid_images, whole_valid_labels = \
+            generate_validation_set(valid_image_batch, valid_label_batch)
+    train(train_step, accuracy, loss)

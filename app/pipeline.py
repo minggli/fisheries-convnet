@@ -24,8 +24,9 @@ def folder_traverse(root_dir):
     return file_structure
 
 
-def generate_data_skeleton(file_structure, test_size=None):
+def generate_data_skeleton(root_dir, test_size=None):
     """turn file structure into human-readable pandas dataframe"""
+    file_structure = folder_traverse(root_dir)
     reversed_fs = {k + '/' + f : k.split('/')[-1]
         for k, v in file_structure.items() for f in v}
     df = pd.DataFrame.from_dict(data=reversed_fs, orient='index').reset_index()
@@ -39,12 +40,14 @@ def generate_data_skeleton(file_structure, test_size=None):
     if test_size:
         sss = model_selection.StratifiedShuffleSplit(n_splits=1, test_size=test_size)
         train_index, test_index = zip(*sss.split(X, y))
+        print('training: {0} samples; test: {1} samples.'.format(
+            len(train_index[0]), len(test_index[0])))
         return X[train_index], y[train_index], X[test_index], y[test_index]
     else:
-        return X, y, None, None
+        return X, y
 
 
-def make_queue(paths_to_image, labels, num_epochs=None):
+def make_queue(paths_to_image, labels, num_epochs=NUM_EPOCHS):
     """returns an Ops Tensor with queued image and label pair"""
     images = tf.convert_to_tensor(paths_to_image, dtype=tf.string)
     labels = tf.convert_to_tensor(labels, dtype=tf.uint8)
@@ -96,23 +99,22 @@ def decode_transform(input_queue, shape=IMAGE_SHAPE, standardize=True):
 
 def batch_generator(image, label, batch_size=BATCH_SIZE):
     """turn data queue into batches"""
-    return tf.train.batch([image, label], batch_size = batch_size)
+    return tf.train.shuffle_batch(
+            tensors = [image, label],
+            batch_size = batch_size,
+            capacity = 1e4,
+            min_after_dequeue = 200,
+            num_threads = 4,
+            allow_smaller_final_batch = True
+            )
 
 
-def data_pipe(root_dir, num_epochs=NUM_EPOCHS, test_size=None):
+def data_pipe(paths_to_image, labels, num_epochs=NUM_EPOCHS):
     """so one-in-all from data directory to iterated data feed in batches"""
-    train_images_array, train_label_array, test_images_array, test_label_array = \
-        generate_data_skeleton(folder_traverse(root_dir), test_size=test_size)
-    train_resized_image_queue, train_label_queue = \
-        decode_transform(make_queue(train_images_array, train_label_array))
-    train_image_batch, train_label_batch = \
-        batch_generator(train_resized_image_queue, train_label_queue)
 
-    if test_size:
-        test_resized_image_queue, test_label_queue = \
-            decode_transform(make_queue(test_images_array, test_label_array))
-        test_image_batch, test_label_batch = \
-            batch_generator(test_resized_image_queue, test_label_queue)
-        return train_image_batch, train_label_batch, test_image_batch, test_label_batch
-    else:
-        return train_image_batch, train_label_batch
+    resized_image_queue, label_queue = \
+        decode_transform(make_queue(paths_to_image, labels, num_epochs=num_epochs))
+    image_batch, label_batch = \
+        batch_generator(resized_image_queue, label_queue)
+
+    return image_batch, label_batch

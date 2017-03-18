@@ -47,9 +47,7 @@ class ConvolutionalNeuralNet(object):
     @property
     def _y(self):
         """true label, in one hot format"""
-        return tf.placeholder(
-            dtype=tf.float32, shape=[None, 8], name='label'
-        )
+        return tf.placeholder(dtype=tf.float32, shape=[None, 8], name='label')
 
     @property
     def keep_prob(self):
