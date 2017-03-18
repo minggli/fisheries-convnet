@@ -1,12 +1,11 @@
 # -*- coding: utf-8 -*-
 
 import os
-import sys
 import numpy as np
 import pandas as pd
 import tensorflow as tf
 
-from sklearn import preprocessing, model_selection
+from sklearn import model_selection
 
 from .settings import IMAGE_PATH, IMAGE_SHAPE, BATCH_SIZE, NUM_EPOCHS
 
@@ -24,7 +23,7 @@ def folder_traverse(root_dir):
     return file_structure
 
 
-def generate_data_skeleton(root_dir, test_size=None):
+def generate_data_skeleton(root_dir, valid_size=None):
     """turn file structure into human-readable pandas dataframe"""
     file_structure = folder_traverse(root_dir)
     reversed_fs = {k + '/' + f : k.split('/')[-1]
@@ -37,8 +36,8 @@ def generate_data_skeleton(root_dir, test_size=None):
 
     X, y = np.array(df['filename']), np.array(df['labels'])
 
-    if test_size:
-        sss = model_selection.StratifiedShuffleSplit(n_splits=1, test_size=test_size)
+    if valid_size:
+        sss = model_selection.StratifiedShuffleSplit(n_splits=1, test_size=valid_size)
         train_index, test_index = zip(*sss.split(X, y))
         print('training: {0} samples; test: {1} samples.'.format(
             len(train_index[0]), len(test_index[0])))
