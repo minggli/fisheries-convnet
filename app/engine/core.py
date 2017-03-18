@@ -72,5 +72,5 @@ initializer = tf.group(tf.local_variables_initializer(), tf.global_variables_ini
 with sess:
     sess.run(initializer)
     whole_valid_images, whole_valid_labels = \
-            generate_validation_set(valid_image_batch, valid_label_batch)
-    train(train_step, accuracy, loss)
+            generate_validation_set(sess, valid_image_batch, valid_label_batch)
+    train(sess, train_step, accuracy, loss)
