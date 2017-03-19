@@ -81,9 +81,13 @@ init_op = tf.group(
 if not EVAL:
     with sess:
         sess.run(init_op)
+
+        valid_image, valid_label = \
+            generate_validation_set(sess, valid_image_batch, valid_label_batch)
+
         train(MAX_STEPS, sess, x, _y, keep_prob, train_image_batch,
-        train_label_batch, valid_image_batch, valid_label_batch, train_step,
-        accuracy, loss)
+        train_label_batch, valid_image, valid_label, train_step, accuracy, loss)
+
         save_session(sess, path=MODEL_PATH)
 elif EVAL:
     sess.run(init_op)

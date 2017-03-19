@@ -28,6 +28,7 @@ def timeit(func):
     return wrapper
 
 
+@multi_threading
 @timeit
 def generate_validation_set(sess, valid_image_batch, valid_label_batch):
     """generate validation set from pipeline as we need the entirety of
@@ -53,11 +54,9 @@ def generate_validation_set(sess, valid_image_batch, valid_label_batch):
 
 @multi_threading
 @timeit
-def train(n, sess, x, _y, keep_prob, train_image_batch, train_label_batch, valid_image_batch,
-            valid_label_batch, optimiser, metric, loss):
+def train(n, sess, x, _y, keep_prob, train_image_batch, train_label_batch,
+            valid_image, valid_label, optimiser, metric, loss):
     """train neural network and produce accuracies with validation set."""
-    valid_image, valid_label = \
-        generate_validation_set(sess, valid_image_batch, valid_label_batch)
 
     for global_step in range(n):
         train_image, train_label = sess.run([train_image_batch, train_label_batch])
@@ -69,6 +68,7 @@ def train(n, sess, x, _y, keep_prob, train_image_batch, train_label_batch, valid
                 _y: valid_label, keep_prob: 0.5})
             print("step {0} of {3}, validation accuracy {1:.4f}, loss {2:.4f}".
                             format(global_step, valid_accuracy, loss_score, n))
+
 
 @multi_threading
 @timeit
@@ -109,6 +109,7 @@ def submit(complete_probs, path):
                 encoding='utf8',
                 header=True,
                 index=True)
+
 
 def restore_session(sess, path):
     """restore hard trained model for predicting."""
