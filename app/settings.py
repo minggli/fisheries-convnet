@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
-MODEL_PATH = './app/trained_models/'
-IMAGE_PATH = './app/data/'
+MODEL_PATH = './trained_models/'
+IMAGE_PATH = './data/'
 IMAGE_SHAPE = (72, 128, 3)
 BATCH_SIZE = 200
-MAX_STEPS = 2000
+MAX_STEPS = 1000
