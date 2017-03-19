@@ -37,11 +37,12 @@ def generate_data_skeleton(root_dir, valid_size=None):
     X, y = np.array(df['filename']), np.array(df['labels'])
 
     if valid_size:
-        sss = model_selection.StratifiedShuffleSplit(n_splits=1, test_size=valid_size)
-        train_index, test_index = zip(*sss.split(X, y))
+        X_train, X_valid, y_train, y_valid = \
+        model_selection.train_test_split(X, y, test_size=valid_size, stratify=y,
+        random_state=1)
         print('training: {0} samples; validation: {1} samples.'.format(
-            len(train_index[0]), len(test_index[0])))
-        return X[train_index], y[train_index], X[test_index], y[test_index]
+            X_train.shape[0], X_valid.shape[0]))
+        return X_train, y_train, X_valid, y_valid
     else:
         print('test: {0} samples.'.format(X.shape[0]))
         return X, y
