@@ -57,7 +57,7 @@ logits = cnn.add_read_out_layer(drop_out_layer_1, [[2048, 8], [8]])
 # train
 cross_entropy = tf.nn.softmax_cross_entropy_with_logits(labels=_y, logits=logits)
 loss = tf.reduce_mean(cross_entropy)
-train_step = tf.train.RMSPropOptimizer(learning_rate=1e-2).minimize(loss)
+train_step = tf.train.RMSPropOptimizer(learning_rate=1e-4).minimize(loss)
 
 # eval
 correct_prediction = tf.equal(tf.argmax(logits, 1), tf.argmax(_y, 1))
