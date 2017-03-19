@@ -79,15 +79,15 @@ test_image_batch, _ = \
 init_op = tf.group(
             tf.local_variables_initializer(), tf.global_variables_initializer())
 
+sess.run(init_op)
+
 if not EVAL:
     with sess:
-        sess.run(init_op)
         train(MAX_STEPS, sess, x, _y, keep_prob, train_image_batch,
         train_label_batch, valid_image_batch, valid_label_batch, train_step,
         accuracy, loss)
         save_session(sess, path=MODEL_PATH)
 elif EVAL:
-    sess.run(init_op)
     with sess:
         restore_session(sess, MODEL_PATH)
         probs = predict(sess, x, keep_prob, logits, test_image_batch)

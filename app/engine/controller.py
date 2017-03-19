@@ -63,7 +63,7 @@ def train(n, sess, x, _y, keep_prob, train_image_batch, train_label_batch,
     for global_step in range(n):
         train_image, train_label = sess.run([train_image_batch, train_label_batch])
         optimiser.run(feed_dict={x: train_image, _y: train_label, keep_prob: 0.5})
-
+        print(global_step, train_label)
         if global_step % 10 == 0:
             valid_accuracy, loss_score = \
                 sess.run([metric, loss], feed_dict={x: valid_image,
@@ -80,8 +80,9 @@ def predict(sess, x, keep_prob, logits, test_image_batch):
     complete_probs = list()
     for _ in range(20):
         try:
+            test_image = sess.run(test_image_batch)
             probs = sess.run(tf.nn.softmax(logits),
-                feed_dict={x: test_image_batch.eval(), keep_prob: 1.0})
+                feed_dict={x: test_image, keep_prob: 1.0})
             complete_probs.append(probs)
         except tf.errors.OutOfRangeError as e:
             # pipe exhausted with pre-determined number of epochs i.e. 1
