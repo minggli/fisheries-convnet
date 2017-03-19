@@ -49,9 +49,9 @@ class ConvolutionalNeuralNet(object):
         """true label, in one hot format"""
         return tf.placeholder(dtype=tf.float32, shape=[None, 8], name='label')
 
-    @property
-    def keep_prob(self):
-        return tf.placeholder(dtype=tf.float32)
+    # @property
+    # def keep_prob(self):
+    #     return tf.placeholder(dtype=tf.float32, name='keepprob')
 
     def add_conv_layer(self, input_layer, hyperparams, func='relu'):
         """Convolution Layer with hyperparamters and activation_func"""
@@ -77,9 +77,10 @@ class ConvolutionalNeuralNet(object):
             self.__class__.non_linearity(func)(tf.matmul(flat_x, W) + b)
         return hypothesis
 
-    def add_drop_out_layer(self, input_layer):
+    def add_drop_out_layer(self, input_layer, keep_prob):
         """drop out layer to reduce overfitting"""
-        hypothesis_drop = tf.nn.dropout(input_layer, self.keep_prob)
+        # keep_prob = self.keep_prob
+        hypothesis_drop = tf.nn.dropout(input_layer, keep_prob)
         return hypothesis_drop
 
     def add_read_out_layer(self, input_layer, hyperparams):

@@ -14,7 +14,9 @@ _mailinglist
 .cache/
 .idea/
 venv/
-__pycache__
+__pycache__/
+data/
+trained_models/
 
 # Coverage reports
 htmlcov

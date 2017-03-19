@@ -7,7 +7,7 @@ import tensorflow as tf
 
 from sklearn import model_selection
 
-from .settings import IMAGE_PATH, IMAGE_SHAPE, BATCH_SIZE, NUM_EPOCHS
+from .settings import IMAGE_PATH, IMAGE_SHAPE, BATCH_SIZE
 
 
 def folder_traverse(root_dir):
@@ -39,22 +39,22 @@ def generate_data_skeleton(root_dir, valid_size=None):
     if valid_size:
         sss = model_selection.StratifiedShuffleSplit(n_splits=1, test_size=valid_size)
         train_index, test_index = zip(*sss.split(X, y))
-        print('training: {0} samples; test: {1} samples.'.format(
+        print('training: {0} samples; validation: {1} samples.'.format(
             len(train_index[0]), len(test_index[0])))
         return X[train_index], y[train_index], X[test_index], y[test_index]
     else:
+        print('test: {0} samples.'.format(X.shape[0]))
         return X, y
 
 
-def make_queue(paths_to_image, labels, num_epochs=NUM_EPOCHS, shuffle=True):
+def make_queue(paths_to_image, labels, num_epochs=None, shuffle=True):
     """returns an Ops Tensor with queued image and label pair"""
     images = tf.convert_to_tensor(paths_to_image, dtype=tf.string)
     labels = tf.convert_to_tensor(labels, dtype=tf.uint8)
     input_queue = tf.train.slice_input_producer(
         tensor_list=[images, labels],
         num_epochs=num_epochs,
-        shuffle=shuffle
-        )
+        shuffle=shuffle)
     return input_queue
 
 
@@ -70,14 +70,12 @@ def decode_transform(input_queue, shape=IMAGE_SHAPE, standardize=True):
     cropped_image_content = tf.image.resize_image_with_crop_or_pad(
         image=original_image,
         target_height=shape[0]*10,
-        target_width=shape[1]*10
-        )
+        target_width=shape[1]*10)
 
     # resize cropped images to desired shape
     resize_image_content = tf.image.resize_images(
         images = cropped_image_content,
-        size = [shape[0], shape[1]]
-        )
+        size = [shape[0], shape[1]])
 
     resize_image_content.set_shape(shape)
 
@@ -86,8 +84,7 @@ def decode_transform(input_queue, shape=IMAGE_SHAPE, standardize=True):
         indices = label_queue,
         depth = 8,
         on_value = 1,
-        off_value = 0
-        )
+        off_value = 0)
 
     if standardize:
         # TODO how to standardize queued image data
@@ -103,27 +100,23 @@ def batch_generator(image, label, batch_size=BATCH_SIZE, shuffle=True):
                 tensors = [image, label],
                 batch_size = batch_size,
                 num_threads = 4,
-                capacity = 1e4,
+                capacity = 1e3,
                 min_after_dequeue = 200,
-                allow_smaller_final_batch = True
-                )
+                allow_smaller_final_batch = True)
     elif not shuffle:
         return tf.train.batch(
                 tensors = [image, label],
                 batch_size = batch_size,
                 num_threads = 4,
-                capacity = 1e4,
-                allow_smaller_final_batch = True
-                )
+                capacity = 1e3,
+                allow_smaller_final_batch = True)
 
 
-def data_pipe(paths_to_image, labels, num_epochs=NUM_EPOCHS, shuffle=True):
+def data_pipe(paths_to_image, labels, num_epochs=None, shuffle=True):
     """so one-in-all from data directory to iterated data feed in batches"""
-
     resized_image_queue, label_queue = \
         decode_transform(make_queue(
             paths_to_image, labels, num_epochs=num_epochs, shuffle=shuffle))
     image_batch, label_batch = \
         batch_generator(resized_image_queue, label_queue, shuffle=shuffle)
-
     return image_batch, label_batch
