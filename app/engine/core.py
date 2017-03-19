@@ -55,7 +55,7 @@ drop_out_layer_1 = cnn.add_drop_out_layer(fully_connected_layer_2, keep_prob)
 logits = cnn.add_read_out_layer(drop_out_layer_1, [[2048, 8], [8]])
 
 # train
-cross_entropy = tf.nn.softmax_cross_entropy_with_logits(labels=_y, logits=logits)
+cross_entropy = tf.nn.softmax_cross_entropy_with_logits(logits=logits, labels=_y)
 loss = tf.reduce_mean(cross_entropy)
 train_step = tf.train.RMSPropOptimizer(learning_rate=1e-4).minimize(loss)
 
@@ -65,7 +65,7 @@ accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
 
 # prepare data feed
 train_file_array, train_label_array, valid_file_array, valid_label_array = \
-        generate_data_skeleton(root_dir=IMAGE_PATH + 'train', valid_size=.1)
+        generate_data_skeleton(root_dir=IMAGE_PATH + 'train', valid_size=.2)
 train_image_batch, train_label_batch = \
         data_pipe(train_file_array, train_label_array, num_epochs=None)
 valid_image_batch, valid_label_batch = \
@@ -87,6 +87,7 @@ if not EVAL:
         train_label_batch, valid_image_batch, valid_label_batch, train_step,
         accuracy, loss)
         save_session(sess, path=MODEL_PATH)
+
 elif EVAL:
     with sess:
         restore_session(sess, MODEL_PATH)

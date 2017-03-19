@@ -10,8 +10,11 @@ def multi_threading(func):
         coord = tf.train.Coordinator()
         threads = tf.train.start_queue_runners(coord=coord)
         func_output = func(*args, **kwargs)
-        coord.request_stop()
-        coord.join(threads)
+        try:
+            coord.request_stop()
+            coord.join(threads)
+        except tf.errors.CancelledError as e:
+            pass
         return func_output
     return wrapper
 
@@ -63,7 +66,7 @@ def train(n, sess, x, _y, keep_prob, train_image_batch, train_label_batch,
     for global_step in range(n):
         train_image, train_label = sess.run([train_image_batch, train_label_batch])
         optimiser.run(feed_dict={x: train_image, _y: train_label, keep_prob: 0.5})
-        print(global_step, train_label)
+        print(global_step, train_label[0])
         if global_step % 10 == 0:
             valid_accuracy, loss_score = \
                 sess.run([metric, loss], feed_dict={x: valid_image,
@@ -81,6 +84,7 @@ def predict(sess, x, keep_prob, logits, test_image_batch):
     for _ in range(20):
         try:
             test_image = sess.run(test_image_batch)
+            print(test_image[0])
             probs = sess.run(tf.nn.softmax(logits),
                 feed_dict={x: test_image, keep_prob: 1.0})
             complete_probs.append(probs)
@@ -90,7 +94,7 @@ def predict(sess, x, keep_prob, logits, test_image_batch):
             break
     return complete_probs
 
-
+@timeit
 def submit(complete_probs, path):
     """"produce an output file with predicted probabilities."""
 
