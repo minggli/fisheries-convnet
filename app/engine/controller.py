@@ -51,8 +51,8 @@ def generate_validation_set(sess, valid_image_batch, valid_label_batch):
     return whole_valid_images, whole_valid_labels
 
 
-@multi_threading
-@timeit
+# @multi_threading
+# @timeit
 def train(n, sess, x, _y, keep_prob, train_image_batch, train_label_batch, valid_image_batch,
             valid_label_batch, optimiser, metric, loss):
     """train neural network and produce accuracies with validation set."""
