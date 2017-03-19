@@ -63,6 +63,14 @@ def decode_transform(input_queue, shape=IMAGE_SHAPE, standardize=True):
     no mean centralisation. Sparsed data such as image data, mean
     centralisation is not suited.
     """
+    # input_queue allows slicing with 0: path_to_image, 1: codified label
+    label_queue = input_queue[1]
+    one_hot_label_queue = tf.one_hot(
+        indices = label_queue,
+        depth = 8,
+        on_value = 1,
+        off_value = 0)
+
     image_queue = tf.read_file(input_queue[0])
     original_image = tf.image.decode_image(image_queue, channels=shape[2])
 
@@ -77,20 +85,16 @@ def decode_transform(input_queue, shape=IMAGE_SHAPE, standardize=True):
         images = cropped_image_content,
         size = [shape[0], shape[1]])
 
+    # apply standardization
     resize_image_content.set_shape(shape)
 
-    label_queue = input_queue[1]
-    one_hot_label_queue = tf.one_hot(
-        indices = label_queue,
-        depth = 8,
-        on_value = 1,
-        off_value = 0)
-
     if standardize:
-        # TODO how to standardize queued image data
-        pass
+        std_image_content = tf.image.per_image_standardization(resize_image_content)
+        processed_image = std_image_content
+    elif not standardize:
+        processed_image = resize_image_content
 
-    return resize_image_content, one_hot_label_queue
+    return processed_image, one_hot_label_queue
 
 
 def batch_generator(image, label, batch_size=BATCH_SIZE, shuffle=True):
