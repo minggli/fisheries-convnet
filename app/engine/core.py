@@ -50,7 +50,7 @@ fully_connected_layer_1 = cnn.add_dense_layer(
 #                             func='relu'
 #                             )
 # (1, 2048)
-drop_out_layer_1 = cnn.add_drop_out_layer(fully_connected_layer_2, keep_prob)
+drop_out_layer_1 = cnn.add_drop_out_layer(fully_connected_layer_1, keep_prob)
 # (1, 2048)
 logits = cnn.add_read_out_layer(drop_out_layer_1, [[2048, 8], [8]])
 
