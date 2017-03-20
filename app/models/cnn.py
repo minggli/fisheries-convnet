@@ -42,7 +42,7 @@ class ConvolutionalNeuralNet(object):
             dtype=tf.float32,
             shape=self.shape,
             name='feature'
-        ), [-1, 72, 128, 3])
+        ), [-1, 90, 160, 3])
 
     @property
     def _y(self):
