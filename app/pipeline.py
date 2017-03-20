@@ -86,9 +86,9 @@ def decode_transform(input_queue, shape=IMAGE_SHAPE, standardize=True):
         images = cropped_image_content,
         size = [shape[0], shape[1]])
 
-    # apply standardization
     resize_image_content.set_shape(shape)
 
+    # apply standardization
     if standardize:
         std_image_content = tf.image.per_image_standardization(resize_image_content)
         processed_image = std_image_content

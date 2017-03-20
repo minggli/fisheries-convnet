@@ -12,8 +12,8 @@ def multi_threading(func):
         func_output = func(*args, **kwargs)
         try:
             coord.request_stop()
-            coord.join(threads)
-        except tf.errors.CancelledError as e:
+            coord.join(threads, stop_grace_period_secs=5)
+        except (tf.errors.CancelledError, RuntimeError) as e:
             pass
         return func_output
     return wrapper
@@ -117,6 +117,7 @@ def submit(complete_probs, path):
                 index=True)
 
 
+@timeit
 def restore_session(sess, path):
     """restore hard trained model for predicting."""
     eval_saver = tf.train.import_meta_graph(tf.train.latest_checkpoint(path) + '.meta')
@@ -124,6 +125,7 @@ def restore_session(sess, path):
     print('Restore successful.')
 
 
+@timeit
 def save_session(sess, path):
     """save hard trained model for future predicting."""
     from datetime import datetime

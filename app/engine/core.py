@@ -7,10 +7,9 @@ import tensorflow as tf
 
 from app.main import EVAL
 from app.models.cnn import ConvolutionalNeuralNet
-from app.settings import IMAGE_PATH, IMAGE_SHAPE, MODEL_PATH, MAX_STEPS
+from app.settings import IMAGE_PATH, IMAGE_SHAPE, MODEL_PATH, MAX_STEPS, ALPHA
 from app.pipeline import data_pipe, generate_data_skeleton
-
-from .controller import generate_validation_set, train, save_session, predict, \
+from app.controller import generate_validation_set, train, save_session, predict, \
                         submit, restore_session
 
 sess = tf.Session()
@@ -57,7 +56,7 @@ logits = cnn.add_read_out_layer(drop_out_layer_1, [[2048, 8], [8]])
 # train
 cross_entropy = tf.nn.softmax_cross_entropy_with_logits(logits=logits, labels=_y)
 loss = tf.reduce_mean(cross_entropy)
-train_step = tf.train.RMSPropOptimizer(learning_rate=1e-4).minimize(loss)
+train_step = tf.train.RMSPropOptimizer(learning_rate=ALPHA).minimize(loss)
 
 # eval
 correct_prediction = tf.equal(tf.argmax(logits, 1), tf.argmax(_y, 1))
@@ -93,5 +92,6 @@ elif EVAL:
         # restore_session(sess, MODEL_PATH)
         eval_saver = tf.train.import_meta_graph(tf.train.latest_checkpoint(MODEL_PATH) + '.meta')
         eval_saver.restore(sess, tf.train.latest_checkpoint(MODEL_PATH))
+        print('restore finished.')
         probs = predict(sess, x, keep_prob, logits, test_image_batch)
         submit(probs, IMAGE_PATH)
