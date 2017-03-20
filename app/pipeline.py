@@ -112,9 +112,10 @@ def batch_generator(image, label, batch_size=BATCH_SIZE, shuffle=True):
         return tf.train.batch(
                 tensors = [image, label],
                 batch_size = batch_size,
-                num_threads = 4,
+                num_threads = 1,
+                # thread number must be one to keep it unshuffled.
                 capacity = 1e3,
-                allow_smaller_final_batch = True)
+                allow_smaller_final_batch = False)
 
 
 def data_pipe(paths_to_image, labels, num_epochs=None, shuffle=True):

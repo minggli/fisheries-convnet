@@ -67,9 +67,9 @@ accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
 train_file_array, train_label_array, valid_file_array, valid_label_array = \
         generate_data_skeleton(root_dir=IMAGE_PATH + 'train', valid_size=.2)
 train_image_batch, train_label_batch = \
-        data_pipe(train_file_array, train_label_array, num_epochs=None)
+        data_pipe(train_file_array, train_label_array, num_epochs=None, shuffle=True)
 valid_image_batch, valid_label_batch = \
-        data_pipe(valid_file_array, valid_label_array, num_epochs=1)
+        data_pipe(valid_file_array, valid_label_array, num_epochs=1, shuffle=False)
 
 test_file_array, _ = \
         generate_data_skeleton(root_dir=IMAGE_PATH + 'test_stg1', valid_size=None)
