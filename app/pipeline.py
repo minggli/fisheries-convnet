@@ -98,7 +98,7 @@ def decode_transform(input_queue, shape=IMAGE_SHAPE, standardize=True):
     return processed_image, one_hot_label_queue
 
 
-def batch_generator(image, label, batch_size=BATCH_SIZE, shuffle=True):
+def batch_generator(image, label, batch_size=BATCH_SIZE, shuffle=True, sf=True):
     """turn data queue into batches"""
     if shuffle:
         return tf.train.shuffle_batch(
@@ -107,7 +107,7 @@ def batch_generator(image, label, batch_size=BATCH_SIZE, shuffle=True):
                 num_threads = 4,
                 capacity = 1e3,
                 min_after_dequeue = 200,
-                allow_smaller_final_batch = True)
+                allow_smaller_final_batch = sf)
     elif not shuffle:
         return tf.train.batch(
                 tensors = [image, label],
@@ -115,14 +115,14 @@ def batch_generator(image, label, batch_size=BATCH_SIZE, shuffle=True):
                 num_threads = 1,
                 # thread number must be one to keep it unshuffled.
                 capacity = 1e3,
-                allow_smaller_final_batch = True)
+                allow_smaller_final_batch = sf)
 
 
-def data_pipe(paths_to_image, labels, num_epochs=None, shuffle=True):
+def data_pipe(paths_to_image, labels, num_epochs=None, shuffle=True, sf=True):
     """so one-in-all from data directory to iterated data feed in batches"""
     resized_image_queue, label_queue = \
         decode_transform(make_queue(
             paths_to_image, labels, num_epochs=num_epochs, shuffle=shuffle))
     image_batch, label_batch = \
-        batch_generator(resized_image_queue, label_queue, shuffle=shuffle)
+        batch_generator(resized_image_queue, label_queue, shuffle=shuffle, sf=sf)
     return image_batch, label_batch
