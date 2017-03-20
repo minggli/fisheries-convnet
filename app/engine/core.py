@@ -20,44 +20,42 @@ x, _y = cnn.x, cnn._y
 keep_prob = tf.placeholder(tf.float32)
 # (90, 160, 3)
 conv_layer_1 = cnn.add_conv_layer(x, [[5, 5, 3, 32], [32]], func='sigmoid')
-# (72, 128, 12)
+
 conv_layer_2 = cnn.add_conv_layer(conv_layer_1, [[5, 5, 32, 32], [32]], func='relu')
 
 conv_layer_3 = cnn.add_conv_layer(conv_layer_2, [[5, 5, 32, 32], [32]], func='relu')
 
-# (72, 128, 24)
 max_pool_1 = cnn.add_pooling_layer(conv_layer_3)
-# (45, 80, 24)
+# (45, 80, 32)
 conv_layer_33 = cnn.add_conv_layer(max_pool_1, [[5, 5, 32, 64], [64]], func='sigmoid')
-# (36, 64, 48)
+
 conv_layer_4 = cnn.add_conv_layer(conv_layer_33, [[5, 5, 64, 64], [64]], func='relu')
 
 conv_layer_5 = cnn.add_conv_layer(conv_layer_4, [[5, 5, 64, 64], [64]], func='relu')
-# (36, 64, 48)
+
 max_pool_2 = cnn.add_pooling_layer(conv_layer_5)
-# (23, 40, 48)
+# (23, 40, 64)
 conv_layer_6 = cnn.add_conv_layer(max_pool_2, [[3, 3, 64, 128], [128]], func='sigmoid')
-# (18, 32, 96)
+
 conv_layer_7 = cnn.add_conv_layer(conv_layer_6, [[3, 3, 128, 128], [128]], func='relu')
 
 conv_layer_8 = cnn.add_conv_layer(conv_layer_7, [[3, 3, 128, 128], [128]], func='relu')
-# (18, 32, 96)
+
 max_pool_3 = cnn.add_pooling_layer(conv_layer_8)
-# (12, 20, 96)
+# (12, 20, 128)
 conv_layer_9 = cnn.add_conv_layer(max_pool_3, [[3, 3, 128, 256], [256]], func='sigmoid')
-# (18, 32, 96)
+
 conv_layer_10 = cnn.add_conv_layer(conv_layer_9, [[3, 3, 256, 256], [256]], func='relu')
 
 conv_layer_11 = cnn.add_conv_layer(conv_layer_10, [[3, 3, 256, 256], [256]], func='relu')
-# (18, 32, 96)
+
 max_pool_4 = cnn.add_pooling_layer(conv_layer_11)
-# (6, 10, 96)
+# (6, 10, 256)
 fully_connected_layer_1 = cnn.add_dense_layer(
                             max_pool_4,
                             [[6 * 10 * 256, 2048], [2048], [-1, 6 * 10 * 256]],
                             func='sigmoid'
                             )
-# (1, 4096)
 fully_connected_layer_2 = cnn.add_dense_layer(
                             fully_connected_layer_1,
                             [[2048, 2048], [2048], [-1, 2048]],
@@ -105,8 +103,5 @@ if not EVAL:
 elif EVAL:
     with sess:
         restore_session(sess, MODEL_PATH)
-        # eval_saver = tf.train.import_meta_graph(tf.train.latest_checkpoint(MODEL_PATH) + '.meta')
-        # eval_saver.restore(sess, tf.train.latest_checkpoint(MODEL_PATH))
-        # print('restore finished.')
         probs = predict(sess, x, keep_prob, logits, test_image_batch)
         submit(probs, IMAGE_PATH)
