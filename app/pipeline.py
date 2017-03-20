@@ -115,7 +115,7 @@ def batch_generator(image, label, batch_size=BATCH_SIZE, shuffle=True):
                 num_threads = 1,
                 # thread number must be one to keep it unshuffled.
                 capacity = 1e3,
-                allow_smaller_final_batch = False)
+                allow_smaller_final_batch = True)
 
 
 def data_pipe(paths_to_image, labels, num_epochs=None, shuffle=True):

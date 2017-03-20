@@ -23,13 +23,13 @@ def test_image():
     for _ in range(10):
         try:
             valid_image = sess.run(valid_image_batch)
-            print(valid_image[5])
-            whole_valid_images.append(test_image)
+            # print(valid_image[155])
+            whole_valid_images.append(valid_image)
         except tf.errors.OutOfRangeError as e:
-            # whole_valid_images = [data for array in whole_valid_images for data in array]
-            pass
+            flattened = [piece for blk in whole_valid_images for piece in blk]
+            break
 
-    # print(len(whole_valid_images))
+    print(flattened[-1])
 
 with sess:
     test_image()

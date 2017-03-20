@@ -38,7 +38,7 @@ def generate_validation_set(sess, valid_image_batch, valid_label_batch):
     """
     whole_valid_images = list()
     whole_valid_labels = list()
-    for _ in range(20):
+    for _ in range(50):
         try:
             valid_image, valid_label = sess.run(
                 [valid_image_batch, valid_label_batch])
@@ -80,19 +80,18 @@ def train(n, sess, x, _y, keep_prob, train_image_batch, train_label_batch,
 def predict(sess, x, keep_prob, logits, test_image_batch):
     """predict test set using graph previously trained and saved."""
 
-    complete_probs = list()
-    for _ in range(20):
+    whole_test_images = list()
+    for _ in range(50):
         try:
             test_image = sess.run(test_image_batch)
-            print(test_image[0])
-            probs = sess.run(tf.nn.softmax(logits),
-                feed_dict={x: test_image, keep_prob: 1.0})
-            complete_probs.append(probs)
+            whole_test_images.append(test_image)
         except tf.errors.OutOfRangeError as e:
             # pipe exhausted with pre-determined number of epochs i.e. 1
-            complete_probs = [data for array in complete_probs for data in array]
+            whole_test_images = [data for array in whole_test_images for data in array]
             break
-    return complete_probs
+
+    return sess.run(tf.nn.softmax(logits), feed_dict={x: whole_test_images, keep_prob: 1.0})
+
 
 @timeit
 def submit(complete_probs, path):
