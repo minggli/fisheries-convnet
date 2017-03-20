@@ -19,23 +19,30 @@ cnn = ConvolutionalNeuralNet(shape=(None, IMAGE_SHAPE[2],
 x, _y = cnn.x, cnn._y
 keep_prob = tf.placeholder(tf.float32)
 # (72, 128, 3)
-conv_layer_1 = cnn.add_conv_layer(x, [[3, 3, 3, 32], [32]], func='sigmoid')
+conv_layer_1 = cnn.add_conv_layer(x, [[5, 5, 3, 32], [32]], func='sigmoid')
 # (72, 128, 12)
-conv_layer_2 = cnn.add_conv_layer(conv_layer_1, [[3, 3, 32, 32], [32]], func='relu')
+conv_layer_2 = cnn.add_conv_layer(conv_layer_1, [[5, 5, 32, 32], [32]], func='relu')
+
+conv_layer_3 = cnn.add_conv_layer(conv_layer_2, [[5, 5, 32, 32], [32]], func='relu')
+
 # (72, 128, 24)
-max_pool_1 = cnn.add_pooling_layer(conv_layer_2)
+max_pool_1 = cnn.add_pooling_layer(conv_layer_3)
 # (36, 64, 24)
-conv_layer_3 = cnn.add_conv_layer(max_pool_1, [[3, 3, 32, 64], [64]], func='sigmoid')
+conv_layer_3 = cnn.add_conv_layer(max_pool_1, [[5, 5, 32, 64], [64]], func='sigmoid')
 # (36, 64, 48)
-conv_layer_4 = cnn.add_conv_layer(conv_layer_3, [[3, 3, 64, 64], [64]], func='relu')
+conv_layer_4 = cnn.add_conv_layer(conv_layer_3, [[5, 5, 64, 64], [64]], func='relu')
+
+conv_layer_5 = cnn.add_conv_layer(conv_layer_4, [[5, 5, 64, 64], [64]], func='relu')
 # (36, 64, 48)
-max_pool_2 = cnn.add_pooling_layer(conv_layer_4)
+max_pool_2 = cnn.add_pooling_layer(conv_layer_5)
 # (18, 32, 48)
 conv_layer_5 = cnn.add_conv_layer(max_pool_2, [[3, 3, 64, 128], [128]], func='sigmoid')
 # (18, 32, 96)
 conv_layer_6 = cnn.add_conv_layer(conv_layer_5, [[3, 3, 128, 128], [128]], func='relu')
+
+conv_layer_7 = cnn.add_conv_layer(conv_layer_6, [[3, 3, 128, 128], [128]], func='relu')
 # (18, 32, 96)
-max_pool_3 = cnn.add_pooling_layer(conv_layer_6)
+max_pool_3 = cnn.add_pooling_layer(conv_layer_7)
 # (9, 16, 96)
 fully_connected_layer_1 = cnn.add_dense_layer(
                             max_pool_3,
