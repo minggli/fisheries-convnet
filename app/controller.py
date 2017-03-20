@@ -80,17 +80,18 @@ def train(n, sess, x, _y, keep_prob, train_image_batch, train_label_batch,
 def predict(sess, x, keep_prob, logits, test_image_batch):
     """predict test set using graph previously trained and saved."""
 
-    whole_test_images = list()
+    complete_probs = list()
     for _ in range(50):
         try:
             test_image = sess.run(test_image_batch)
-            whole_test_images.append(test_image)
+            probs = sess.run(tf.nn.softmax(logits),
+                                    feed_dict={x: test_image, keep_prob: 1.0})
+            complete_probs.append(probs)
         except tf.errors.OutOfRangeError as e:
             # pipe exhausted with pre-determined number of epochs i.e. 1
-            whole_test_images = [data for array in whole_test_images for data in array]
+            complete_probs = [data for array in complete_probs for data in array]
             break
-
-    return sess.run(tf.nn.softmax(logits), feed_dict={x: whole_test_images, keep_prob: 1.0})
+    return complete_probs
 
 
 @timeit
