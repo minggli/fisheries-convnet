@@ -45,7 +45,7 @@ fully_connected_layer_1 = cnn.add_dense_layer(
 # (1, 4096)
 fully_connected_layer_2 = cnn.add_dense_layer(
                             fully_connected_layer_1,
-                            [[2048, 2048], [2048], [-1, 4096]],
+                            [[2048, 2048], [2048], [-1, 2048]],
                             func='relu'
                             )
 # (1, 2048)
