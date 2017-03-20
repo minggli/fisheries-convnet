@@ -90,6 +90,8 @@ if not EVAL:
 
 elif EVAL:
     with sess:
-        restore_session(sess, MODEL_PATH)
+        # restore_session(sess, MODEL_PATH)
+        eval_saver = tf.train.import_meta_graph(tf.train.latest_checkpoint(MODEL_PATH) + '.meta')
+        eval_saver.restore(sess, tf.train.latest_checkpoint(MODEL_PATH))
         probs = predict(sess, x, keep_prob, logits, test_image_batch)
         submit(probs, IMAGE_PATH)
