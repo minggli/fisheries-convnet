@@ -9,8 +9,7 @@ from app.main import EVAL
 from app.models.cnn import ConvolutionalNeuralNet
 from app.settings import IMAGE_PATH, IMAGE_SHAPE, MODEL_PATH, MAX_STEPS, ALPHA
 from app.pipeline import data_pipe, generate_data_skeleton
-from app.controllers import generate_validation_set, train, save_session, predict, \
-                        submit, restore_session
+from app.controllers import train, save_session, predict, submit, restore_session
 
 sess = tf.Session()
 cnn = ConvolutionalNeuralNet(shape=(None, IMAGE_SHAPE[2],
