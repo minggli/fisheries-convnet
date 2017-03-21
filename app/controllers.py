@@ -12,7 +12,7 @@ def multi_threading(func):
         func_output = func(*args, **kwargs)
         try:
             coord.request_stop()
-            coord.join(threads, stop_grace_period_secs=5)
+            coord.join(threads, stop_grace_period_secs=10)
         except (tf.errors.CancelledError, RuntimeError) as e:
             pass
         return func_output

@@ -15,7 +15,11 @@ sess = tf.Session()
 cnn = ConvolutionalNeuralNet(shape=(None, IMAGE_SHAPE[2],
                         functools.reduce(operator.mul, IMAGE_SHAPE[:2], 1)))
 
-x, _y = cnn.x, cnn._y
+# x, _y = cnn.x, cnn._y
+x = tf.reshape(tf.placeholder(dtype=tf.float32, shape=(None, IMAGE_SHAPE[2],
+                        functools.reduce(operator.mul, IMAGE_SHAPE[:2], 1))
+                        , name='feature'), [-1, 90, 160, 3])
+_y = tf.placeholder(dtype=tf.float32, shape=[None, 8], name='label')
 keep_prob = tf.placeholder(tf.float32)
 # (90, 160, 3)
 conv_layer_1 = cnn.add_conv_layer(x, [[3, 3, 3, 64], [64]], func='relu')
@@ -80,28 +84,23 @@ train_step = tf.train.RMSPropOptimizer(learning_rate=ALPHA).minimize(loss)
 correct_prediction = tf.equal(tf.argmax(logits, 1), tf.argmax(_y, 1))
 accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
 
-# prepare data feed
-train_file_array, train_label_array, valid_file_array, valid_label_array = \
-        generate_data_skeleton(root_dir=IMAGE_PATH + 'train', valid_size=.2)
-train_image_batch, train_label_batch = \
-        data_pipe(train_file_array, train_label_array, num_epochs=None, shuffle=True)
-valid_image_batch, valid_label_batch = \
-        data_pipe(valid_file_array, valid_label_array, num_epochs=None, shuffle=True)
-
-test_file_array, _ = \
-        generate_data_skeleton(root_dir=IMAGE_PATH + 'test_stg1', valid_size=None)
-# there is no shuffling or more than 1 epoch of test set, only through once.
-test_image_batch, _ = \
-        data_pipe(test_file_array, _, num_epochs=1, shuffle=False)
-
-init_op = tf.group(
-                    tf.local_variables_initializer(),
-                    tf.global_variables_initializer()
-                )
-
-sess.run(init_op)
-
 if not EVAL:
+
+    # prepare data feed
+    train_file_array, train_label_array, valid_file_array, valid_label_array = \
+            generate_data_skeleton(root_dir=IMAGE_PATH + 'train', valid_size=.2)
+    train_image_batch, train_label_batch = \
+            data_pipe(train_file_array, train_label_array, num_epochs=None, shuffle=True)
+    valid_image_batch, valid_label_batch = \
+            data_pipe(valid_file_array, valid_label_array, num_epochs=None, shuffle=True)
+
+    init_op = tf.group(
+                        tf.local_variables_initializer(),
+                        tf.global_variables_initializer()
+                    )
+
+    sess.run(init_op)
+
     with sess:
         train(MAX_STEPS, sess, x, _y, keep_prob, train_image_batch,
         train_label_batch, valid_image_batch, valid_label_batch, train_step,
@@ -110,6 +109,20 @@ if not EVAL:
         sess.close()
 
 elif EVAL:
+
+    test_file_array, _ = \
+            generate_data_skeleton(root_dir=IMAGE_PATH + 'test_stg1', valid_size=None)
+    # there is no shuffling or more than 1 epoch of test set, only through once.
+    test_image_batch, _ = \
+            data_pipe(test_file_array, _, num_epochs=1, shuffle=False)
+
+    init_op = tf.group(
+                        tf.local_variables_initializer(),
+                        tf.global_variables_initializer()
+                    )
+
+    sess.run(init_op)
+
     with sess:
         restore_session(sess, MODEL_PATH)
         probs = predict(sess, x, keep_prob, logits, test_image_batch)
