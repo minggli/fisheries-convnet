@@ -73,7 +73,7 @@ def train(n, sess, x, _y, keep_prob, train_image_batch, train_label_batch,
             training_accuracy, loss_score = \
                 sess.run([metric, loss], feed_dict={x: valid_image,
                 _y: valid_label, keep_prob: 1.0})
-            print("step {0} of {3}, training accuracy: {1:.4f}, logistic loss: {2:.4f}".
+            print("step {0} of {3}, training accuracy: {1:.4f}, log loss: {2:.4f}".
                             format(global_step, training_accuracy, loss_score, n))
 
 
