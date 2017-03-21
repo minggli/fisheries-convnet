@@ -89,6 +89,7 @@ def predict(sess, x, keep_prob, logits, test_image_batch):
             probs = sess.run(tf.nn.softmax(logits),
                                     feed_dict={x: test_image, keep_prob: 1.0})
             complete_probs.append(probs)
+            print(probs)
         except tf.errors.OutOfRangeError as e:
             # pipe exhausted with pre-determined number of epochs i.e. 1
             complete_probs = [data for array in complete_probs for data in array]
@@ -108,8 +109,8 @@ def submit(complete_probs, path):
                 filepath_or_buffer=path + 'sample_submission_stg1.csv',
                 encoding='utf8',
                 index_col=0)
-    for i in complete_probs:
-        print(i)
+    # for i in complete_probs:
+    #     print(i)
     df = pd.DataFrame(
                 data=complete_probs,
                 columns=template.columns,
