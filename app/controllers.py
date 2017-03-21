@@ -31,27 +31,27 @@ def timeit(func):
     return wrapper
 
 
-@timeit
-def generate_validation_set(sess, valid_image_batch, valid_label_batch):
-    """generate validation set from pipeline as we need the entirety of
-    validation data to check model training progress.
-    """
-    whole_valid_images = list()
-    whole_valid_labels = list()
-    for _ in range(50):
-        try:
-            valid_image, valid_label = sess.run(
-                [valid_image_batch, valid_label_batch])
-            whole_valid_images.append(valid_image)
-            whole_valid_labels.append(valid_label)
-        except tf.errors.OutOfRangeError as e:
-            # pipe exhausted with pre-determined number of epochs i.e. 1
-            whole_valid_images = [data for array in whole_valid_images
-                for data in array]
-            whole_valid_labels = [data for array in whole_valid_labels
-                for data in array]
-            break
-    return whole_valid_images, whole_valid_labels
+# @timeit
+# def generate_validation_set(sess, valid_image_batch, valid_label_batch):
+#     """generate validation set from pipeline as we need the entirety of
+#     validation data to check model training progress.
+#     """
+#     whole_valid_images = list()
+#     whole_valid_labels = list()
+#     for _ in range(50):
+#         try:
+#             valid_image, valid_label = sess.run(
+#                 [valid_image_batch, valid_label_batch])
+#             whole_valid_images.append(valid_image)
+#             whole_valid_labels.append(valid_label)
+#         except tf.errors.OutOfRangeError as e:
+#             # pipe exhausted with pre-determined number of epochs i.e. 1
+#             whole_valid_images = [data for array in whole_valid_images
+#                 for data in array]
+#             whole_valid_labels = [data for array in whole_valid_labels
+#                 for data in array]
+#             break
+#     return whole_valid_images, whole_valid_labels
 
 
 @multi_threading
@@ -60,19 +60,21 @@ def train(n, sess, x, _y, keep_prob, train_image_batch, train_label_batch,
             valid_image_batch, valid_label_batch, optimiser, metric, loss):
     """train neural network and produce accuracies with validation set."""
 
-    valid_image, valid_label = \
-        generate_validation_set(sess, valid_image_batch, valid_label_batch)
+    # valid_image, valid_label = \
+    #     generate_validation_set(sess, valid_image_batch, valid_label_batch)
 
     for global_step in range(n):
         train_image, train_label = sess.run([train_image_batch, train_label_batch])
         optimiser.run(feed_dict={x: train_image, _y: train_label, keep_prob: 0.5})
         print(global_step, train_label[0])
         if global_step % 10 == 0:
-            valid_accuracy, loss_score = \
+            valid_image, valid_label = \
+                sess.run([valid_image_batch, valid_label_batch])
+            training_accuracy, loss_score = \
                 sess.run([metric, loss], feed_dict={x: valid_image,
-                _y: valid_label, keep_prob: 0.5})
-            print("step {0} of {3}, validation accuracy {1:.4f}, loss {2:.4f}".
-                            format(global_step, valid_accuracy, loss_score, n))
+                _y: valid_label, keep_prob: 1.0})
+            print("step {0} of {3}, training accuracy: {1:.4f}, logistic loss: {2:.4f}".
+                            format(global_step, training_accuracy, loss_score, n))
 
 
 @multi_threading

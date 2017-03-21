@@ -64,7 +64,7 @@ def decode_transform(input_queue, shape=IMAGE_SHAPE, standardize=True):
     no mean centralisation. Sparsed data such as image data, mean
     centralisation is not suited.
     """
-    # input_queue allows slicing with 0: path_to_image, 1: codified label
+    # input_queue allows slicing with 0: path_to_image, 1: encoded label
     label_queue = input_queue[1]
     one_hot_label_queue = tf.one_hot(
         indices = label_queue,

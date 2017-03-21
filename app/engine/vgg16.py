@@ -74,6 +74,7 @@ logits = cnn.add_read_out_layer(drop_out_layer_2, [[1000, 8], [8]])
 # train
 cross_entropy = tf.nn.softmax_cross_entropy_with_logits(logits=logits, labels=_y)
 loss = tf.reduce_mean(cross_entropy)
+# loss = tf.losses.softmax_cross_entropy(onehot_labels=_y, logits=logits)
 train_step = tf.train.RMSPropOptimizer(learning_rate=ALPHA).minimize(loss)
 
 # eval
@@ -82,14 +83,15 @@ accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
 
 # prepare data feed
 train_file_array, train_label_array, valid_file_array, valid_label_array = \
-        generate_data_skeleton(root_dir=IMAGE_PATH + 'train', valid_size=.1)
+        generate_data_skeleton(root_dir=IMAGE_PATH + 'train', valid_size=.2)
 train_image_batch, train_label_batch = \
         data_pipe(train_file_array, train_label_array, num_epochs=None, shuffle=True)
 valid_image_batch, valid_label_batch = \
-        data_pipe(valid_file_array, valid_label_array, num_epochs=1, shuffle=False)
+        data_pipe(valid_file_array, valid_label_array, num_epochs=None, shuffle=True)
 
 test_file_array, _ = \
         generate_data_skeleton(root_dir=IMAGE_PATH + 'test_stg1', valid_size=None)
+# there is no shuffling or more than 1 epoch of test set, only through once.
 test_image_batch, _ = \
         data_pipe(test_file_array, _, num_epochs=1, shuffle=False)
 
@@ -106,9 +108,11 @@ if not EVAL:
         train_label_batch, valid_image_batch, valid_label_batch, train_step,
         accuracy, loss)
         save_session(sess, path=MODEL_PATH)
+        sess.close()
 
 elif EVAL:
     with sess:
         restore_session(sess, MODEL_PATH)
         probs = predict(sess, x, keep_prob, logits, test_image_batch)
         submit(probs, IMAGE_PATH)
+        sess.close()
