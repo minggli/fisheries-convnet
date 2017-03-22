@@ -23,39 +23,39 @@ conv_layer_2 = cnn.add_conv_layer(conv_layer_1, [[3, 3, 12, 12], [12]], func='re
 
 max_pool_1 = cnn.add_pooling_layer(conv_layer_2)
 # (45, 80, *)
-conv_layer_3 = cnn.add_conv_layer(max_pool_1, [[3, 3, 12, 24], [24]], func='relu')
+conv_layer_3 = cnn.add_conv_layer(max_pool_1, [[3, 3, 12, 12], [12]], func='relu')
 
-conv_layer_4 = cnn.add_conv_layer(conv_layer_3, [[3, 3, 24, 24], [24]], func='relu')
+conv_layer_4 = cnn.add_conv_layer(conv_layer_3, [[3, 3, 12, 12], [12]], func='relu')
 
 max_pool_2 = cnn.add_pooling_layer(conv_layer_4)
 # (23, 40, *)
-conv_layer_5 = cnn.add_conv_layer(max_pool_2, [[3, 3, 24, 48], [48]], func='relu')
+conv_layer_5 = cnn.add_conv_layer(max_pool_2, [[3, 3, 12, 24], [24]], func='relu')
 
-conv_layer_6 = cnn.add_conv_layer(conv_layer_5, [[3, 3, 48, 48], [48]], func='relu')
+conv_layer_6 = cnn.add_conv_layer(conv_layer_5, [[3, 3, 24, 24], [24]], func='relu')
 
-conv_layer_7 = cnn.add_conv_layer(conv_layer_6, [[3, 3, 48, 48], [48]], func='relu')
+conv_layer_7 = cnn.add_conv_layer(conv_layer_6, [[3, 3, 24, 24], [24]], func='relu')
 
 max_pool_3 = cnn.add_pooling_layer(conv_layer_7)
 # (12, 20, *)
-conv_layer_8 = cnn.add_conv_layer(max_pool_3, [[3, 3, 48, 96], [96]], func='relu')
+conv_layer_8 = cnn.add_conv_layer(max_pool_3, [[3, 3, 24, 48], [48]], func='relu')
 
-conv_layer_9 = cnn.add_conv_layer(conv_layer_8, [[3, 3, 96, 96], [96]], func='relu')
+conv_layer_9 = cnn.add_conv_layer(conv_layer_8, [[3, 3, 48, 48], [48]], func='relu')
 
-conv_layer_10 = cnn.add_conv_layer(conv_layer_9, [[3, 3, 96, 96], [96]], func='relu')
+conv_layer_10 = cnn.add_conv_layer(conv_layer_9, [[3, 3, 48, 48], [48]], func='relu')
 
 max_pool_4 = cnn.add_pooling_layer(conv_layer_10)
 # (6, 10, *)
-conv_layer_11 = cnn.add_conv_layer(max_pool_4, [[3, 3, 96, 96], [96]], func='relu')
+conv_layer_11 = cnn.add_conv_layer(max_pool_4, [[3, 3, 48, 48], [48]], func='relu')
 
-conv_layer_12 = cnn.add_conv_layer(conv_layer_11, [[3, 3, 96, 96], [96]], func='relu')
+conv_layer_12 = cnn.add_conv_layer(conv_layer_11, [[3, 3, 48, 48], [48]], func='relu')
 
-conv_layer_13 = cnn.add_conv_layer(conv_layer_12, [[3, 3, 96, 96], [96]], func='relu')
+conv_layer_13 = cnn.add_conv_layer(conv_layer_12, [[3, 3, 48, 48], [48]], func='relu')
 
 max_pool_4 = cnn.add_pooling_layer(conv_layer_13)
 # (3, 5, *)
 fully_connected_layer_1 = cnn.add_dense_layer(
                             max_pool_4,
-                            [[2 * 3 * 96, 1024], [1024], [-1, 2 * 3 * 96]],
+                            [[2 * 3 * 48, 1024], [1024], [-1, 2 * 3 * 48]],
                             func='relu'
                             )
 # drop_out_layer_1 = cnn.add_drop_out_layer(fully_connected_layer_1, keep_prob)
@@ -79,6 +79,7 @@ train_step = tf.train.RMSPropOptimizer(learning_rate=ALPHA).minimize(loss)
 # eval
 correct_prediction = tf.equal(tf.argmax(logits, 1), tf.argmax(_y, 1))
 accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
+
 
 if not EVAL:
 
