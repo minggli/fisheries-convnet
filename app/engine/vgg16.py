@@ -64,16 +64,16 @@ fully_connected_layer_1 = cnn.add_dense_layer(
                             [[2 * 3 * 96, 4096], [4096], [-1, 2 * 3 * 96]],
                             func='relu'
                             )
-drop_out_layer_1 = cnn.add_drop_out_layer(fully_connected_layer_1, keep_prob)
+# drop_out_layer_1 = cnn.add_drop_out_layer(fully_connected_layer_1, keep_prob)
 fully_connected_layer_2 = cnn.add_dense_layer(
-                            drop_out_layer_1,
+                            fully_connected_layer_1,
                             [[4096, 1000], [1000], [-1, 4096]],
                             func='relu'
                             )
 # (1, 4096)
-drop_out_layer_2 = cnn.add_drop_out_layer(fully_connected_layer_2, keep_prob)
+# drop_out_layer_2 = cnn.add_drop_out_layer(fully_connected_layer_2, keep_prob)
 # (1, 4096)
-logits = cnn.add_read_out_layer(drop_out_layer_2, [[1000, 8], [8]])
+logits = cnn.add_read_out_layer(fully_connected_layer_2, [[1000, 8], [8]])
 
 # train
 cross_entropy = tf.nn.softmax_cross_entropy_with_logits(logits=logits, labels=_y)
