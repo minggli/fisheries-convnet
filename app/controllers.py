@@ -68,7 +68,6 @@ def predict(sess, x, keep_prob, logits, test_image_batch):
             # pipe exhausted with pre-determined number of epochs i.e. 1
             complete_probs = [data for array in complete_probs for data in array]
             break
-    input('press to produce submission.')
     return complete_probs
 
 
