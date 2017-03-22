@@ -66,7 +66,7 @@ def predict(sess, x, keep_prob, logits, test_image_batch):
             complete_probs.append(probs)
         except tf.errors.OutOfRangeError as e:
             # pipe exhausted with pre-determined number of epochs i.e. 1
-            complete_probs = [data for array in complete_probs for data in array]
+            complete_probs = [list(data) for array in complete_probs for data in array]
             break
     return complete_probs
 
