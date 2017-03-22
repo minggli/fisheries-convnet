@@ -1,27 +1,21 @@
 # -*- coding: utf-8 -*-
 
-import operator
-import functools
+
 import numpy as np
 import tensorflow as tf
 
 from app.main import EVAL
 from app.models.cnn import ConvolutionalNeuralNet
-from app.settings import IMAGE_PATH, IMAGE_SHAPE, IMAGE_SHAPE_4D, MODEL_PATH, MAX_STEPS, ALPHA
+from app.settings import IMAGE_PATH, IMAGE_SHAPE, MODEL_PATH, MAX_STEPS, ALPHA
 from app.pipeline import data_pipe, generate_data_skeleton
 from app.controllers import train, save_session, predict, submit, restore_session
 
 sess = tf.Session()
-cnn = ConvolutionalNeuralNet(shape=(None, IMAGE_SHAPE[2],
-                        functools.reduce(operator.mul, IMAGE_SHAPE[:2], 1)))
+cnn = ConvolutionalNeuralNet(shape=IMAGE_SHAPE)
 
-# x, _y = cnn.x, cnn._y
-x = tf.reshape(tf.placeholder(dtype=tf.float32, shape=(None, IMAGE_SHAPE[2],
-                        functools.reduce(operator.mul, IMAGE_SHAPE[:2], 1))
-                        , name='feature'), IMAGE_SHAPE_4D)
-_y = tf.placeholder(dtype=tf.float32, shape=[None, 8], name='label')
+x, _y = cnn.x, cnn._y
+# keep prob seems to behave differet from normal variables
 keep_prob = tf.placeholder(tf.float32)
-
 # (90, 160, 3)
 conv_layer_1 = cnn.add_conv_layer(x, [[3, 3, 3, 12], [12]], func='relu')
 
@@ -71,6 +65,7 @@ fully_connected_layer_2 = cnn.add_dense_layer(
                             func='relu'
                             )
 # (1, 4096)
+# drop out layer halves training accuracy from unseen valid set
 # drop_out_layer_2 = cnn.add_drop_out_layer(fully_connected_layer_2, keep_prob)
 # (1, 4096)
 logits = cnn.add_read_out_layer(fully_connected_layer_2, [[1000, 8], [8]])

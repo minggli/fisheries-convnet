@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 
+import operator
+import functools
 import tensorflow as tf
 
 
@@ -8,6 +10,11 @@ class ConvolutionalNeuralNet(object):
     def __init__(self, shape):
         """shape: [n_samples, channels, n_features]"""
         self.shape = shape
+        self.flattened_shape = (
+                                None,
+                                shape[2], functools.reduce(
+                                operator.mul, shape[:2], 1)
+                                )
 
     @staticmethod
     def weight_variable(shape):
@@ -40,9 +47,12 @@ class ConvolutionalNeuralNet(object):
         """feature set"""
         return tf.reshape(tf.placeholder(
             dtype=tf.float32,
-            shape=self.shape,
+            shape=self.flattened_shape,
             name='feature'
-        ), [-1, 90, 160, 3])
+        ),
+        # transform 3D shape to 4D
+        (-1, ) + self.shape
+        )
 
     @property
     def _y(self):
