@@ -124,7 +124,7 @@ elif EVAL:
         eval_saver.restore(sess, tf.train.latest_checkpoint(MODEL_PATH))
         print('restore success.')
         sess.run(init_op)
-        tf.start_queue_runners()
+        tf.train.start_queue_runners()
         # probs = predict(sess, x, keep_prob, logits, test_image_batch)
         complete_probs = list()
         for _ in range(50):
