@@ -7,7 +7,7 @@ import tensorflow as tf
 
 from app.main import EVAL
 from app.models.cnn import ConvolutionalNeuralNet
-from app.settings import IMAGE_PATH, IMAGE_SHAPE, MODEL_PATH, MAX_STEPS, ALPHA
+from app.settings import IMAGE_PATH, IMAGE_SHAPE, IMAGE_SHAPE_4D, MODEL_PATH, MAX_STEPS, ALPHA
 from app.pipeline import data_pipe, generate_data_skeleton
 from app.controllers import train, save_session, predict, submit, restore_session
 
@@ -18,49 +18,50 @@ cnn = ConvolutionalNeuralNet(shape=(None, IMAGE_SHAPE[2],
 # x, _y = cnn.x, cnn._y
 x = tf.reshape(tf.placeholder(dtype=tf.float32, shape=(None, IMAGE_SHAPE[2],
                         functools.reduce(operator.mul, IMAGE_SHAPE[:2], 1))
-                        , name='feature'), [-1, 90, 160, 3])
+                        , name='feature'), IMAGE_SHAPE_4D)
 _y = tf.placeholder(dtype=tf.float32, shape=[None, 8], name='label')
 keep_prob = tf.placeholder(tf.float32)
-# (90, 160, 3)
-conv_layer_1 = cnn.add_conv_layer(x, [[3, 3, 3, 64], [64]], func='relu')
 
-conv_layer_2 = cnn.add_conv_layer(conv_layer_1, [[3, 3, 64, 64], [64]], func='relu')
+# (90, 160, 3)
+conv_layer_1 = cnn.add_conv_layer(x, [[3, 3, 3, 12], [12]], func='relu')
+
+conv_layer_2 = cnn.add_conv_layer(conv_layer_1, [[3, 3, 12, 12], [12]], func='relu')
 
 max_pool_1 = cnn.add_pooling_layer(conv_layer_2)
 # (45, 80, *)
-conv_layer_3 = cnn.add_conv_layer(max_pool_1, [[3, 3, 64, 128], [128]], func='relu')
+conv_layer_3 = cnn.add_conv_layer(max_pool_1, [[3, 3, 12, 24], [24]], func='relu')
 
-conv_layer_4 = cnn.add_conv_layer(conv_layer_3, [[3, 3, 128, 128], [128]], func='relu')
+conv_layer_4 = cnn.add_conv_layer(conv_layer_3, [[3, 3, 24, 24], [24]], func='relu')
 
 max_pool_2 = cnn.add_pooling_layer(conv_layer_4)
 # (23, 40, *)
-conv_layer_5 = cnn.add_conv_layer(max_pool_2, [[3, 3, 128, 256], [256]], func='relu')
+conv_layer_5 = cnn.add_conv_layer(max_pool_2, [[3, 3, 24, 48], [48]], func='relu')
 
-conv_layer_6 = cnn.add_conv_layer(conv_layer_5, [[3, 3, 256, 256], [256]], func='relu')
+conv_layer_6 = cnn.add_conv_layer(conv_layer_5, [[3, 3, 48, 48], [48]], func='relu')
 
-conv_layer_7 = cnn.add_conv_layer(conv_layer_6, [[3, 3, 256, 256], [256]], func='relu')
+conv_layer_7 = cnn.add_conv_layer(conv_layer_6, [[3, 3, 48, 48], [48]], func='relu')
 
 max_pool_3 = cnn.add_pooling_layer(conv_layer_7)
 # (12, 20, *)
-conv_layer_8 = cnn.add_conv_layer(max_pool_3, [[3, 3, 256, 512], [512]], func='relu')
+conv_layer_8 = cnn.add_conv_layer(max_pool_3, [[3, 3, 48, 96], [96]], func='relu')
 
-conv_layer_9 = cnn.add_conv_layer(conv_layer_8, [[3, 3, 512, 512], [512]], func='relu')
+conv_layer_9 = cnn.add_conv_layer(conv_layer_8, [[3, 3, 96, 96], [96]], func='relu')
 
-conv_layer_10 = cnn.add_conv_layer(conv_layer_9, [[3, 3, 512, 512], [512]], func='relu')
+conv_layer_10 = cnn.add_conv_layer(conv_layer_9, [[3, 3, 96, 96], [96]], func='relu')
 
 max_pool_4 = cnn.add_pooling_layer(conv_layer_10)
 # (6, 10, *)
-conv_layer_11 = cnn.add_conv_layer(max_pool_4, [[3, 3, 512, 512], [512]], func='relu')
+conv_layer_11 = cnn.add_conv_layer(max_pool_4, [[3, 3, 96, 96], [96]], func='relu')
 
-conv_layer_12 = cnn.add_conv_layer(conv_layer_11, [[3, 3, 512, 512], [512]], func='relu')
+conv_layer_12 = cnn.add_conv_layer(conv_layer_11, [[3, 3, 96, 96], [96]], func='relu')
 
-conv_layer_13 = cnn.add_conv_layer(conv_layer_12, [[3, 3, 512, 512], [512]], func='relu')
+conv_layer_13 = cnn.add_conv_layer(conv_layer_12, [[3, 3, 96, 96], [96]], func='relu')
 
 max_pool_4 = cnn.add_pooling_layer(conv_layer_13)
 # (3, 5, *)
 fully_connected_layer_1 = cnn.add_dense_layer(
                             max_pool_4,
-                            [[3 * 5 * 512, 4096], [4096], [-1, 3 * 5 * 512]],
+                            [[2 * 3 * 96, 4096], [4096], [-1, 2 * 3 * 96]],
                             func='relu'
                             )
 drop_out_layer_1 = cnn.add_drop_out_layer(fully_connected_layer_1, keep_prob)
