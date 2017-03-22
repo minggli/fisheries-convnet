@@ -55,20 +55,20 @@ max_pool_4 = cnn.add_pooling_layer(conv_layer_13)
 # (3, 5, *)
 fully_connected_layer_1 = cnn.add_dense_layer(
                             max_pool_4,
-                            [[2 * 3 * 96, 4096], [4096], [-1, 2 * 3 * 96]],
+                            [[2 * 3 * 96, 1024], [1024], [-1, 2 * 3 * 96]],
                             func='relu'
                             )
 # drop_out_layer_1 = cnn.add_drop_out_layer(fully_connected_layer_1, keep_prob)
 fully_connected_layer_2 = cnn.add_dense_layer(
                             fully_connected_layer_1,
-                            [[4096, 1000], [1000], [-1, 4096]],
+                            [[1024, 1000], [1000], [-1, 1024]],
                             func='relu'
                             )
-# (1, 4096)
+# (1, 1024)
 # drop out layer halves training accuracy from unseen valid set
 # drop_out_layer_2 = cnn.add_drop_out_layer(fully_connected_layer_2, keep_prob)
-# (1, 4096)
-logits = cnn.add_read_out_layer(fully_connected_layer_2, [[1000, 8], [8]])
+# (1, 1024)
+logits = cnn.add_read_out_layer(fully_connected_layer_2, [[512, 8], [8]])
 
 # train
 cross_entropy = tf.nn.softmax_cross_entropy_with_logits(logits=logits, labels=_y)
@@ -121,25 +121,6 @@ elif EVAL:
 
     with sess:
         restore_session(sess, MODEL_PATH)
-        # eval_saver = tf.train.import_meta_graph(tf.train.latest_checkpoint(MODEL_PATH) + '.meta')
-        # eval_saver.restore(sess, tf.train.latest_checkpoint(MODEL_PATH))
-        # print('restore success.')
-        # tf.train.start_queue_runners()
         probs = predict(sess, x, keep_prob, logits, test_image_batch)
-        # complete_probs = list()
-        # for _ in range(50):
-        #     try:
-        #         test_image = sess.run(test_image_batch)
-        #         probs = sess.run(tf.nn.softmax(logits),
-        #                 feed_dict={x: test_image, keep_prob: 1.0})
-        #         complete_probs.append(probs)
-        #         for i in probs:
-        #             print(i)
-        #     except tf.errors.OutOfRangeError as e:
-        #         # pipe exhausted with pre-determined number of epochs i.e. 1
-        #         complete_probs = [list(data) for array in complete_probs for data in array]
-        #         break
-        # input('press.')
-
         submit(probs, IMAGE_PATH)
         sess.close()
