@@ -55,20 +55,20 @@ max_pool_4 = cnn.add_pooling_layer(conv_layer_13)
 # (3, 5, *)
 fully_connected_layer_1 = cnn.add_dense_layer(
                             max_pool_4,
-                            [[2 * 3 * 48, 1024], [1024], [-1, 2 * 3 * 48]],
+                            [[2 * 3 * 48, 512], [512], [-1, 2 * 3 * 48]],
                             func='relu'
                             )
 # drop_out_layer_1 = cnn.add_drop_out_layer(fully_connected_layer_1, keep_prob)
 fully_connected_layer_2 = cnn.add_dense_layer(
                             fully_connected_layer_1,
-                            [[1024, 512], [512], [-1, 1024]],
+                            [[512, 256], [256], [-1, 512]],
                             func='relu'
                             )
 # (1, 1024)
 # drop out layer halves training accuracy from unseen valid set
 # drop_out_layer_2 = cnn.add_drop_out_layer(fully_connected_layer_2, keep_prob)
 # (1, 1024)
-logits = cnn.add_read_out_layer(fully_connected_layer_2, [[512, 8], [8]])
+logits = cnn.add_read_out_layer(fully_connected_layer_2, [[256, 8], [8]])
 
 # train
 cross_entropy = tf.nn.softmax_cross_entropy_with_logits(logits=logits, labels=_y)
