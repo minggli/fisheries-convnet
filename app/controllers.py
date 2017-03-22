@@ -83,6 +83,7 @@ def submit(complete_probs, path):
                 filepath_or_buffer=path + 'sample_submission_stg1.csv',
                 encoding='utf8',
                 index_col=0)
+    print(template)
     df = pd.DataFrame(
                 data=complete_probs,
                 columns=template.columns,
