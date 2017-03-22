@@ -120,26 +120,26 @@ elif EVAL:
     sess.run(init_op)
 
     with sess:
-        # restore_session(sess, MODEL_PATH)
-        eval_saver = tf.train.import_meta_graph(tf.train.latest_checkpoint(MODEL_PATH) + '.meta')
-        eval_saver.restore(sess, tf.train.latest_checkpoint(MODEL_PATH))
-        print('restore success.')
-        tf.train.start_queue_runners()
-        # probs = predict(sess, x, keep_prob, logits, test_image_batch)
-        complete_probs = list()
-        for _ in range(50):
-            try:
-                test_image = sess.run(test_image_batch)
-                probs = sess.run(tf.nn.softmax(logits),
-                        feed_dict={x: test_image, keep_prob: 1.0})
-                complete_probs.append(probs)
-                for i in probs:
-                    print(i)
-            except tf.errors.OutOfRangeError as e:
-                # pipe exhausted with pre-determined number of epochs i.e. 1
-                complete_probs = [list(data) for array in complete_probs for data in array]
-                break
-        input('press.')
+        restore_session(sess, MODEL_PATH)
+        # eval_saver = tf.train.import_meta_graph(tf.train.latest_checkpoint(MODEL_PATH) + '.meta')
+        # eval_saver.restore(sess, tf.train.latest_checkpoint(MODEL_PATH))
+        # print('restore success.')
+        # tf.train.start_queue_runners()
+        probs = predict(sess, x, keep_prob, logits, test_image_batch)
+        # complete_probs = list()
+        # for _ in range(50):
+        #     try:
+        #         test_image = sess.run(test_image_batch)
+        #         probs = sess.run(tf.nn.softmax(logits),
+        #                 feed_dict={x: test_image, keep_prob: 1.0})
+        #         complete_probs.append(probs)
+        #         for i in probs:
+        #             print(i)
+        #     except tf.errors.OutOfRangeError as e:
+        #         # pipe exhausted with pre-determined number of epochs i.e. 1
+        #         complete_probs = [list(data) for array in complete_probs for data in array]
+        #         break
+        # input('press.')
 
-        submit(complete_probs, IMAGE_PATH)
+        submit(probs, IMAGE_PATH)
         sess.close()
