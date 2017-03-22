@@ -117,13 +117,13 @@ elif EVAL:
                         tf.global_variables_initializer()
                     )
 
+    sess.run(init_op)
 
     with sess:
         # restore_session(sess, MODEL_PATH)
         eval_saver = tf.train.import_meta_graph(tf.train.latest_checkpoint(MODEL_PATH) + '.meta')
         eval_saver.restore(sess, tf.train.latest_checkpoint(MODEL_PATH))
         print('restore success.')
-        sess.run(init_op)
         tf.train.start_queue_runners()
         # probs = predict(sess, x, keep_prob, logits, test_image_batch)
         complete_probs = list()
