@@ -61,7 +61,7 @@ fully_connected_layer_1 = cnn.add_dense_layer(
 # drop_out_layer_1 = cnn.add_drop_out_layer(fully_connected_layer_1, keep_prob)
 fully_connected_layer_2 = cnn.add_dense_layer(
                             fully_connected_layer_1,
-                            [[1024, 512], [1024], [-1, 1024]],
+                            [[1024, 512], [512], [-1, 1024]],
                             func='relu'
                             )
 # (1, 1024)
