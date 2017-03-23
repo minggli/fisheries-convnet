@@ -18,7 +18,7 @@ class ConvolutionalNeuralNet(object):
 
     @staticmethod
     def weight_variable(shape):
-        initial = tf.random_normal(shape, stddev=0.1)
+        initial = tf.truncated_normal(shape, stddev=0.1)
         return tf.Variable(initial)
 
     @staticmethod

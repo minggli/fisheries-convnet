@@ -4,7 +4,8 @@ import tensorflow as tf
 
 from app.main import EVAL
 from app.models.cnn import ConvolutionalNeuralNet
-from app.settings import IMAGE_PATH, IMAGE_SHAPE, MODEL_PATH, MAX_STEPS, ALPHA
+from app.settings import (IMAGE_PATH, IMAGE_SHAPE, MODEL_PATH, MAX_STEPS,
+                          ALPHA, BETA)
 from app.pipeline import data_pipe, generate_data_skeleton
 from app.controllers import (train, save_session, predict, submit,
                              restore_session)
@@ -13,85 +14,68 @@ sess = tf.Session()
 cnn = ConvolutionalNeuralNet(shape=IMAGE_SHAPE)
 
 x, _y = cnn.x, cnn._y
+weights = cnn.weight_variable(cnn.flattened_shape)
 # keep prob seems to behave differet from normal variables
-# x = tf.reshape(tf.placeholder(
-#     dtype=tf.float32,
-#     shape=[None, 3, IMAGE_SHAPE[0] * IMAGE_SHAPE[1]],
-#     name='feature'
-# ), (-1, ) + IMAGE_SHAPE)
-# _y = tf.placeholder(dtype=tf.float32, shape=[None, 8], name='label')
 keep_prob = tf.placeholder(tf.float32)
 # (90, 160, 3)
 conv_layer_1 = cnn.add_conv_layer(x, [[3, 3, 3, 12], [12]], func='relu')
-
 conv_layer_2 = \
         cnn.add_conv_layer(conv_layer_1, [[3, 3, 12, 12], [12]], func='relu')
-
 max_pool_1 = cnn.add_pooling_layer(conv_layer_2)
 # (45, 80, *)
 conv_layer_3 = \
         cnn.add_conv_layer(max_pool_1, [[3, 3, 12, 12], [12]], func='relu')
-
 conv_layer_4 = \
         cnn.add_conv_layer(conv_layer_3, [[3, 3, 12, 12], [12]], func='relu')
-
 max_pool_2 = cnn.add_pooling_layer(conv_layer_4)
 # (23, 40, *)
 conv_layer_5 = \
         cnn.add_conv_layer(max_pool_2, [[3, 3, 12, 24], [24]], func='relu')
-
 conv_layer_6 = \
         cnn.add_conv_layer(conv_layer_5, [[3, 3, 24, 24], [24]], func='relu')
-
 conv_layer_7 = \
         cnn.add_conv_layer(conv_layer_6, [[3, 3, 24, 24], [24]], func='relu')
-
 max_pool_3 = cnn.add_pooling_layer(conv_layer_7)
 # (12, 20, *)
 conv_layer_8 = \
         cnn.add_conv_layer(max_pool_3, [[3, 3, 24, 48], [48]], func='relu')
-
 conv_layer_9 = \
         cnn.add_conv_layer(conv_layer_8, [[3, 3, 48, 48], [48]], func='relu')
-
 conv_layer_10 = \
         cnn.add_conv_layer(conv_layer_9, [[3, 3, 48, 48], [48]], func='relu')
-
 max_pool_4 = cnn.add_pooling_layer(conv_layer_10)
 # (6, 10, *)
 conv_layer_11 = \
         cnn.add_conv_layer(max_pool_4, [[3, 3, 48, 48], [48]], func='relu')
-
 conv_layer_12 = \
         cnn.add_conv_layer(conv_layer_11, [[3, 3, 48, 48], [48]], func='relu')
-
 conv_layer_13 = \
         cnn.add_conv_layer(conv_layer_12, [[3, 3, 48, 48], [48]], func='relu')
-
 max_pool_4 = cnn.add_pooling_layer(conv_layer_13)
 # (3, 5, *)
 fully_connected_layer_1 = cnn.add_dense_layer(
                             max_pool_4,
                             [[3 * 5 * 48, 256], [256], [-1, 3 * 5 * 48]],
-                            func='relu'
-                            )
+                            func='relu')
 # drop_out_layer_1 = cnn.add_drop_out_layer(max_pool_4, keep_prob)
 fully_connected_layer_2 = cnn.add_dense_layer(
                             fully_connected_layer_1,
                             [[256, 128], [128], [-1, 256]],
-                            func='relu'
-                            )
+                            func='relu')
 drop_out_layer_2 = cnn.add_drop_out_layer(fully_connected_layer_2, keep_prob)
 # (1, 1024)
 logits = cnn.add_read_out_layer(drop_out_layer_2, [[128, 8], [8]])
 
 # train
-# cross_entropy = tf.nn.softmax_cross_entropy_with_logits(logits, _y)
-# loss = tf.reduce_mean(cross_entropy)
-loss = tf.losses.softmax_cross_entropy(onehot_labels=_y,
-                                       logits=logits,
-                                       weights=10,
-                                       label_smoothing=0)
+cross_entropy = tf.nn.softmax_cross_entropy_with_logits(logits, _y)
+loss = tf.reduce_mean(cross_entropy)
+regularizer = tf.nn.l2_loss(weights)
+loss = tf.reduce_mean(loss + BETA * regularizer)
+# loss = tf.losses.softmax_cross_entropy(onehot_labels=_y,
+#                                        logits=logits,
+#                                        weights=10,
+#                                        label_smoothing=0)
+
 train_step = tf.train.RMSPropOptimizer(learning_rate=ALPHA).minimize(loss)
 
 # eval
@@ -100,7 +84,6 @@ accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
 
 
 if not EVAL:
-
     # prepare data feed
     train_file_array, train_label_array, valid_file_array, valid_label_array =\
         generate_data_skeleton(root_dir=IMAGE_PATH + 'train', valid_size=.15)
