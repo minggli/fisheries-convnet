@@ -39,7 +39,7 @@ def train(n, sess, x, _y, keep_prob, train_image_batch, train_label_batch,
 
     for global_step in range(n):
         train_image, train_label = sess.run([train_image_batch, train_label_batch])
-        optimiser.run(feed_dict={x: train_image, _y: train_label, keep_prob: 0.5})
+        optimiser.run(feed_dict={x: train_image, _y: train_label, keep_prob: 0.7})
         print(global_step, train_label[0])
 
         if global_step % 10 == 0:
@@ -58,7 +58,7 @@ def predict(sess, x, keep_prob, logits, test_image_batch):
     """predict test set using graph previously trained and saved."""
 
     complete_probs = list()
-    for _ in range(50):
+    for _ in range(2000):
         try:
             test_image = sess.run(test_image_batch)
             probs = sess.run(tf.nn.softmax(logits),
@@ -66,9 +66,10 @@ def predict(sess, x, keep_prob, logits, test_image_batch):
             complete_probs.append(probs)
         except tf.errors.OutOfRangeError as e:
             # pipe exhausted with pre-determined number of epochs i.e. 1
-            complete_probs = [data for array in complete_probs for data in array]
             break
-    return complete_probs
+    unravelled_array = \
+        [array for nested_arrays in complete_probs for array in nested_arrays]
+    return unravelled_array
 
 
 @timeit
@@ -87,7 +88,7 @@ def submit(complete_probs, path):
                 data=complete_probs,
                 columns=template.columns,
                 index=template.index,
-                dtype=float)
+                dtype=float).applymap(lambda x: float('{0:.6f}'.format(x)))
     df.to_csv(
                 path + 'submission_{0}.csv'.format(now),
                 encoding='utf8',

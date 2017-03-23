@@ -15,6 +15,12 @@ cnn = ConvolutionalNeuralNet(shape=IMAGE_SHAPE)
 
 x, _y = cnn.x, cnn._y
 # keep prob seems to behave differet from normal variables
+# x = tf.reshape(tf.placeholder(
+#     dtype=tf.float32,
+#     shape=[None, 3, IMAGE_SHAPE[0] * IMAGE_SHAPE[1]],
+#     name='feature'
+# ), (-1, ) + IMAGE_SHAPE)
+# _y = tf.placeholder(dtype=tf.float32, shape=[None, 8], name='label')
 keep_prob = tf.placeholder(tf.float32)
 # (90, 160, 3)
 conv_layer_1 = cnn.add_conv_layer(x, [[3, 3, 3, 12], [12]], func='relu')
@@ -55,25 +61,22 @@ max_pool_4 = cnn.add_pooling_layer(conv_layer_13)
 # (3, 5, *)
 fully_connected_layer_1 = cnn.add_dense_layer(
                             max_pool_4,
-                            [[2 * 3 * 48, 512], [512], [-1, 2 * 3 * 48]],
+                            [[3 * 5 * 48, 256], [256], [-1, 3 * 5 * 48]],
                             func='relu'
                             )
-# drop_out_layer_1 = cnn.add_drop_out_layer(fully_connected_layer_1, keep_prob)
+# drop_out_layer_1 = cnn.add_drop_out_layer(max_pool_4, keep_prob)
 fully_connected_layer_2 = cnn.add_dense_layer(
                             fully_connected_layer_1,
-                            [[512, 256], [256], [-1, 512]],
+                            [[256, 128], [128], [-1, 256]],
                             func='relu'
                             )
-# (1, 1024)
-# drop out layer halves training accuracy from unseen valid set
 # drop_out_layer_2 = cnn.add_drop_out_layer(fully_connected_layer_2, keep_prob)
 # (1, 1024)
-logits = cnn.add_read_out_layer(fully_connected_layer_2, [[256, 8], [8]])
+logits = cnn.add_read_out_layer(fully_connected_layer_2, [[128, 8], [8]])
 
 # train
 cross_entropy = tf.nn.softmax_cross_entropy_with_logits(logits=logits, labels=_y)
 loss = tf.reduce_mean(cross_entropy)
-# loss = tf.losses.softmax_cross_entropy(onehot_labels=_y, logits=logits)
 train_step = tf.train.RMSPropOptimizer(learning_rate=ALPHA).minimize(loss)
 
 # eval
@@ -85,17 +88,14 @@ if not EVAL:
 
     # prepare data feed
     train_file_array, train_label_array, valid_file_array, valid_label_array = \
-            generate_data_skeleton(root_dir=IMAGE_PATH + 'train', valid_size=.2)
+            generate_data_skeleton(root_dir=IMAGE_PATH + 'train', valid_size=.15)
     train_image_batch, train_label_batch = \
             data_pipe(train_file_array, train_label_array, num_epochs=None, shuffle=True)
     valid_image_batch, valid_label_batch = \
             data_pipe(valid_file_array, valid_label_array, num_epochs=None, shuffle=True)
 
-    init_op = tf.group(
-                        tf.local_variables_initializer(),
-                        tf.global_variables_initializer()
-                    )
-
+    init_op = tf.group(tf.local_variables_initializer(),
+            tf.global_variables_initializer())
     sess.run(init_op)
 
     with sess:
@@ -113,11 +113,8 @@ elif EVAL:
     test_image_batch, _ = \
             data_pipe(test_file_array, _, num_epochs=1, shuffle=False)
 
-    init_op = tf.group(
-                        tf.local_variables_initializer(),
-                        tf.global_variables_initializer()
-                    )
-
+    init_op = tf.group(tf.local_variables_initializer(),
+            tf.global_variables_initializer())
     sess.run(init_op)
 
     with sess:
