@@ -7,7 +7,7 @@ import tensorflow as tf
 
 from sklearn import model_selection
 
-from .settings import IMAGE_PATH, IMAGE_SHAPE, BATCH_SIZE
+from .settings import IMAGE_SHAPE, BATCH_SIZE
 
 
 def folder_traverse(root_dir):
@@ -26,8 +26,8 @@ def folder_traverse(root_dir):
 def generate_data_skeleton(root_dir, valid_size=None):
     """turn file structure into human-readable pandas dataframe"""
     file_structure = folder_traverse(root_dir)
-    reversed_fs = {k + '/' + f : k.split('/')[-1]
-        for k, v in file_structure.items() for f in v}
+    reversed_fs = {k + '/' + f: k.split('/')[-1]
+                   for k, v in file_structure.items() for f in v}
     df = pd.DataFrame.from_dict(data=reversed_fs, orient='index').reset_index()
     df.rename(columns={'index': 'filename', 0: 'species'}, inplace=True)
     df.sort_values(by=['species', 'filename'], inplace=True)
@@ -37,9 +37,9 @@ def generate_data_skeleton(root_dir, valid_size=None):
     X, y = np.array(df['filename']), np.array(df['labels'])
 
     if valid_size:
-        X_train, X_valid, y_train, y_valid = \
-        model_selection.train_test_split(X, y, test_size=valid_size, stratify=y,
-        random_state=1)
+        X_train, X_valid, y_train, y_valid = model_selection.train_test_split(
+            X, y, test_size=valid_size, stratify=y,
+            random_state=1)
         print('training: {0} samples; validation: {1} samples.'.format(
             X_train.shape[0], X_valid.shape[0]))
         return X_train, y_train, X_valid, y_valid
@@ -67,10 +67,10 @@ def decode_transform(input_queue, shape=IMAGE_SHAPE, standardize=True):
     # input_queue allows slicing with 0: path_to_image, 1: encoded label
     label_queue = input_queue[1]
     one_hot_label_queue = tf.one_hot(
-        indices = label_queue,
-        depth = 8,
-        on_value = 1,
-        off_value = 0)
+        indices=label_queue,
+        depth=8,
+        on_value=1,
+        off_value=0)
 
     image_queue = tf.read_file(input_queue[0])
     original_image = tf.image.decode_image(image_queue, channels=shape[2])
@@ -83,14 +83,15 @@ def decode_transform(input_queue, shape=IMAGE_SHAPE, standardize=True):
 
     # resize cropped images to desired shape
     resize_image_content = tf.image.resize_images(
-        images = cropped_image_content,
-        size = [shape[0], shape[1]])
+        images=cropped_image_content,
+        size=[shape[0], shape[1]])
 
     resize_image_content.set_shape(shape)
 
     # apply standardization
     if standardize:
-        std_image_content = tf.image.per_image_standardization(resize_image_content)
+        std_image_content = tf.image.per_image_standardization(
+                            resize_image_content)
         processed_image = std_image_content
     elif not standardize:
         processed_image = resize_image_content
@@ -102,20 +103,20 @@ def batch_generator(image, label, batch_size=BATCH_SIZE, shuffle=True):
     """turn data queue into batches"""
     if shuffle:
         return tf.train.shuffle_batch(
-                tensors = [image, label],
-                batch_size = batch_size,
-                num_threads = 4,
-                capacity = 1e3,
-                min_after_dequeue = 200,
-                allow_smaller_final_batch = True)
+                tensors=[image, label],
+                batch_size=batch_size,
+                num_threads=4,
+                capacity=1e3,
+                min_after_dequeue=200,
+                allow_smaller_final_batch=True)
     elif not shuffle:
         return tf.train.batch(
-                tensors = [image, label],
-                batch_size = batch_size,
-                num_threads = 1,
+                tensors=[image, label],
+                batch_size=batch_size,
+                num_threads=1,
                 # thread number must be one to keep it unshuffled.
-                capacity = 1e3,
-                allow_smaller_final_batch = True)
+                capacity=1e3,
+                allow_smaller_final_batch=True)
 
 
 def data_pipe(paths_to_image, labels, num_epochs=None, shuffle=True):

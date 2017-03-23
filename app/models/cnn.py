@@ -13,7 +13,7 @@ class ConvolutionalNeuralNet(object):
         self.flattened_shape = (
                                 None,
                                 shape[2], functools.reduce(
-                                operator.mul, shape[:2], 1)
+                                                    operator.mul, shape[:2], 1)
                                 )
 
     @staticmethod
@@ -33,7 +33,8 @@ class ConvolutionalNeuralNet(object):
     @staticmethod
     def max_pool(x):
         """max pooling with kernal size 2x2 and slide by 2 pixels each time"""
-        return tf.nn.max_pool(x, ksize=[1, 2, 2, 1], strides=[1, 2, 2, 1], padding='SAME')
+        return tf.nn.max_pool(x, ksize=[1, 2, 2, 1], strides=[1, 2, 2, 1],
+                              padding='SAME')
 
     @staticmethod
     def non_linearity(activation_func):
@@ -50,8 +51,8 @@ class ConvolutionalNeuralNet(object):
             shape=self.flattened_shape,
             name='feature'
         ),
-        # transform 3D shape to 4D
-        (-1, ) + self.shape
+            # transform 3D shape to 4D
+            (-1, ) + self.shape
         )
 
     @property

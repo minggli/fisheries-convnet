@@ -26,7 +26,8 @@ def timeit(func):
         start = time.time()
         output = func(*args, **kwargs)
         end = time.time()
-        print('function {0} took {1:0.3f} s'.format(func.__name__, (end - start) * 1))
+        print('function {0} took {1:0.3f} s'.format(
+              func.__name__, (end - start) * 1))
         return output
     return wrapper
 
@@ -34,12 +35,15 @@ def timeit(func):
 @multi_threading
 @timeit
 def train(n, sess, x, _y, keep_prob, train_image_batch, train_label_batch,
-            valid_image_batch, valid_label_batch, optimiser, metric, loss):
+          valid_image_batch, valid_label_batch, optimiser, metric, loss):
     """train neural network and produce accuracies with validation set."""
 
     for global_step in range(n):
-        train_image, train_label = sess.run([train_image_batch, train_label_batch])
-        optimiser.run(feed_dict={x: train_image, _y: train_label, keep_prob: 0.7})
+        train_image, train_label = \
+            sess.run([train_image_batch, train_label_batch])
+        optimiser.run(feed_dict={x: train_image,
+                                 _y: train_label,
+                                 keep_prob: .5})
         print(global_step, train_label[0])
 
         if global_step % 10 == 0:
@@ -47,9 +51,10 @@ def train(n, sess, x, _y, keep_prob, train_image_batch, train_label_batch,
                 sess.run([valid_image_batch, valid_label_batch])
             training_accuracy, loss_score = \
                 sess.run([metric, loss], feed_dict={x: valid_image,
-                _y: valid_label, keep_prob: 1.0})
-            print("step {0} of {3}, training accuracy: {1:.4f}, log loss: {2:.4f}".
-                            format(global_step, training_accuracy, loss_score, n))
+                         _y: valid_label, keep_prob: 1.0})
+            print("step {0} of {3}, valid accuracy: {1:.4f}, "
+                  "log loss: {2:.4f}".format(global_step,
+                                             training_accuracy, loss_score, n))
 
 
 @multi_threading
@@ -62,7 +67,7 @@ def predict(sess, x, keep_prob, logits, test_image_batch):
         try:
             test_image = sess.run(test_image_batch)
             probs = sess.run(tf.nn.softmax(logits),
-                                    feed_dict={x: test_image, keep_prob: 1.0})
+                             feed_dict={x: test_image, keep_prob: 1.0})
             complete_probs.append(probs)
         except tf.errors.OutOfRangeError as e:
             # pipe exhausted with pre-determined number of epochs i.e. 1
@@ -99,7 +104,8 @@ def submit(complete_probs, path):
 @timeit
 def restore_session(sess, path):
     """restore hard trained model for predicting."""
-    eval_saver = tf.train.import_meta_graph(tf.train.latest_checkpoint(path) + '.meta')
+    eval_saver = \
+        tf.train.import_meta_graph(tf.train.latest_checkpoint(path) + '.meta')
     eval_saver.restore(sess, tf.train.latest_checkpoint(path))
     print('Restore successful.')
 
