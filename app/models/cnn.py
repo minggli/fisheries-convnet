@@ -13,7 +13,7 @@ class ConvolutionalNeuralNet(object):
         self.flattened_shape = (
                                 None,
                                 shape[2], functools.reduce(
-                                                    operator.mul, shape[:2], 1)
+                                    operator.mul, shape[:2], 1)
                                 )
 
     @staticmethod

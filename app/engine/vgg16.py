@@ -14,7 +14,7 @@ sess = tf.Session()
 cnn = ConvolutionalNeuralNet(shape=IMAGE_SHAPE)
 
 x, _y = cnn.x, cnn._y
-weights = cnn.weight_variable(cnn.flattened_shape)
+weights = cnn.weight_variable(shape=[90 * 160, 3])
 # keep prob seems to behave differet from normal variables
 keep_prob = tf.placeholder(tf.float32)
 # (90, 160, 3)
@@ -67,14 +67,19 @@ drop_out_layer_2 = cnn.add_drop_out_layer(fully_connected_layer_2, keep_prob)
 logits = cnn.add_read_out_layer(drop_out_layer_2, [[128, 8], [8]])
 
 # train
-cross_entropy = tf.nn.softmax_cross_entropy_with_logits(logits, _y)
+cross_entropy = \
+            tf.nn.softmax_cross_entropy_with_logits(logits=logits, labels=_y)
 loss = tf.reduce_mean(cross_entropy)
-regularizer = tf.nn.l2_loss(weights)
-loss = tf.reduce_mean(loss + BETA * regularizer)
+
+# weighted loss
 # loss = tf.losses.softmax_cross_entropy(onehot_labels=_y,
 #                                        logits=logits,
-#                                        weights=10,
+#                                        weights=1.0,
 #                                        label_smoothing=0)
+
+# L2 regularization
+regularizer = tf.nn.l2_loss(weights)
+loss = tf.reduce_mean(loss + BETA * regularizer)
 
 train_step = tf.train.RMSPropOptimizer(learning_rate=ALPHA).minimize(loss)
 
