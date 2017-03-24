@@ -38,7 +38,7 @@ def generate_data_skeleton(root_dir, valid_size=None):
 
     if valid_size:
         X_train, X_valid, y_train, y_valid = model_selection.train_test_split(
-            X, y, test_size=valid_size, stratify=y,
+            X, y, test_size=valid_size,
             random_state=1)
         print('training: {0} samples; validation: {1} samples.'.format(
             X_train.shape[0], X_valid.shape[0]))
@@ -59,7 +59,7 @@ def make_queue(paths_to_image, labels, num_epochs=None, shuffle=True):
     return input_queue
 
 
-def decode_transform(input_queue, shape=IMAGE_SHAPE, standardize=False):
+def decode_transform(input_queue, shape=IMAGE_SHAPE, standardize=True):
     """a single decode and transform function that applies standardization with
     no mean centralisation. Sparsed data such as image data, mean
     centralisation is not suited.

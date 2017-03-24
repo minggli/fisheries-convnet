@@ -74,9 +74,9 @@ fully_connected_layer_2 = cnn.add_dense_layer(
                             fully_connected_layer_1,
                             [[128, 64], [64], [-1, 128]],
                             func='relu')
-# drop_out_layer_2 = cnn.add_drop_out_layer(fully_connected_layer_2, keep_prob)
+drop_out_layer_2 = cnn.add_drop_out_layer(fully_connected_layer_2, keep_prob)
 # (1, 1024)
-logits = cnn.add_read_out_layer(fully_connected_layer_2, [[64, 8], [8]])
+logits = cnn.add_read_out_layer(drop_out_layer_2, [[64, 8], [8]])
 
 # train
 cross_entropy = \
