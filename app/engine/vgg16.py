@@ -132,7 +132,7 @@ if not EVAL:
 elif EVAL:
 
     test_file_array, _ = \
-            generate_data_skeleton(root_dir=IMAGE_PATH + 'train',
+            generate_data_skeleton(root_dir=IMAGE_PATH + 'test_stg1',
                                    valid_size=None)
     # no shuffling or more than 1 epoch of test set, only through once.
     test_image_batch, _ = \
