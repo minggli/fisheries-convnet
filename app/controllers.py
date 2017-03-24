@@ -43,7 +43,7 @@ def train(n, sess, x, _y, keep_prob, train_image_batch, train_label_batch,
             sess.run([train_image_batch, train_label_batch])
         optimiser.run(feed_dict={x: train_image,
                                  _y: train_label,
-                                 keep_prob: .7})
+                                 keep_prob: 1.0})
         print(global_step, train_label[0])
 
         if global_step % 10 == 0:
