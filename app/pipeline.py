@@ -38,8 +38,7 @@ def generate_data_skeleton(root_dir, valid_size=None):
 
     if valid_size:
         X_train, X_valid, y_train, y_valid = model_selection.train_test_split(
-            X, y, test_size=valid_size,
-            random_state=1)
+            X, y, test_size=valid_size, stratify=None)
         print('training: {0} samples; validation: {1} samples.'.format(
             X_train.shape[0], X_valid.shape[0]))
         return X_train, y_train, X_valid, y_valid
