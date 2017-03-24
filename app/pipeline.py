@@ -59,7 +59,7 @@ def make_queue(paths_to_image, labels, num_epochs=None, shuffle=True):
     return input_queue
 
 
-def decode_transform(input_queue, shape=IMAGE_SHAPE, standardize=True):
+def decode_transform(input_queue, shape=IMAGE_SHAPE, standardize=False):
     """a single decode and transform function that applies standardization with
     no mean centralisation. Sparsed data such as image data, mean
     centralisation is not suited.
