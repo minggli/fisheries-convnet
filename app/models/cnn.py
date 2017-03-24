@@ -12,8 +12,8 @@ class ConvolutionalNeuralNet(object):
         self.shape = shape
         self.flattened_shape = (
                                 None,
-                                shape[2], functools.reduce(
-                                    operator.mul, shape[:2], 1)
+                                shape[2],
+                                functools.reduce(operator.mul, shape[:2], 1)
                                 )
 
     @staticmethod

@@ -5,7 +5,7 @@ import tensorflow as tf
 from app.main import EVAL
 from app.models.cnn import ConvolutionalNeuralNet
 from app.settings import (IMAGE_PATH, IMAGE_SHAPE, MODEL_PATH, MAX_STEPS,
-                          ALPHA, BETA)
+                          ALPHA)
 from app.pipeline import data_pipe, generate_data_skeleton
 from app.controllers import (train, save_session, predict, submit,
                              restore_session)
@@ -14,7 +14,6 @@ sess = tf.Session()
 cnn = ConvolutionalNeuralNet(shape=IMAGE_SHAPE)
 
 x, _y = cnn.x, cnn._y
-weights = cnn.weight_variable(shape=[90 * 160, 3])
 # keep prob seems to behave differet from normal variables
 keep_prob = tf.placeholder(tf.float32)
 # (90, 160, 3)
@@ -79,19 +78,23 @@ drop_out_layer_2 = cnn.add_drop_out_layer(fully_connected_layer_2, keep_prob)
 logits = cnn.add_read_out_layer(drop_out_layer_2, [[64, 8], [8]])
 
 # train
-cross_entropy = \
-            tf.nn.softmax_cross_entropy_with_logits(logits=logits, labels=_y)
+cross_entropy = tf.nn.softmax_cross_entropy_with_logits(
+                                                    logits=logits, labels=_y)
 loss = tf.reduce_mean(cross_entropy)
+
+# class_weights = tf.convert_to_tensor(np.zeros(shape=[BATCH_SIZE]),
+#                                      dtype=tf.uint8)
 
 # weighted loss
 # loss = tf.losses.softmax_cross_entropy(onehot_labels=_y,
 #                                        logits=logits,
-#                                        weights=1.0,
+#                                        weights=class_weights,
 #                                        label_smoothing=0)
 
-# L2 regularization
-regularizer = tf.nn.l2_loss(weights)
-loss = tf.reduce_mean(loss + BETA * regularizer)
+# # L2 regularization
+# weights = cnn.weight_variable(shape=[90 * 160, 3])
+# regularizer = tf.nn.l2_loss(weights)
+# loss = tf.reduce_mean(loss + BETA * regularizer)
 
 train_step = tf.train.RMSPropOptimizer(learning_rate=ALPHA).minimize(loss)
 
@@ -129,7 +132,7 @@ if not EVAL:
 elif EVAL:
 
     test_file_array, _ = \
-            generate_data_skeleton(root_dir=IMAGE_PATH + 'test_stg1',
+            generate_data_skeleton(root_dir=IMAGE_PATH + 'train',
                                    valid_size=None)
     # no shuffling or more than 1 epoch of test set, only through once.
     test_image_batch, _ = \

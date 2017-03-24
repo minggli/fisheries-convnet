@@ -68,7 +68,8 @@ def predict(sess, x, keep_prob, logits, test_image_batch):
             test_image = sess.run(test_image_batch)
             probs = sess.run(tf.nn.softmax(logits),
                              feed_dict={x: test_image, keep_prob: 1.0})
-            print(probs)
+            for sample in probs:
+                print(sample)
             complete_probs.append(probs)
         except tf.errors.OutOfRangeError as e:
             # pipe exhausted with pre-determined number of epochs i.e. 1
