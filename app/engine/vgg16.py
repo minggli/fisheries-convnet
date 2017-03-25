@@ -111,7 +111,7 @@ accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
 if not EVAL:
     # prepare data feed
     train_file_array, train_label_array, valid_file_array, valid_label_array =\
-        generate_data_skeleton(root_dir=IMAGE_PATH + 'train/ALB', valid_size=.15)
+        generate_data_skeleton(root_dir=IMAGE_PATH + 'train', valid_size=.15)
     train_image_batch, train_label_batch = \
         data_pipe(train_file_array,
                   train_label_array,
