@@ -11,7 +11,7 @@ from app.controllers import (train, save_session, predict, submit,
                              restore_session)
 
 
-tf.set_random_seed(7)
+# tf.set_random_seed(7)
 sess = tf.Session()
 
 cnn = ConvolutionalNeuralNet(shape=IMAGE_SHAPE)
@@ -112,16 +112,16 @@ if not EVAL:
     # prepare data feed
     train_file_array, train_label_array, valid_file_array, valid_label_array =\
         generate_data_skeleton(root_dir=IMAGE_PATH + 'train', valid_size=.15)
-    train_image_batch, train_label_batch = \
-        data_pipe(train_file_array,
-                  train_label_array,
-                  num_epochs=None,
-                  shuffle=True)
-    valid_image_batch, valid_label_batch = \
-        data_pipe(valid_file_array,
-                  valid_label_array,
-                  num_epochs=None,
-                  shuffle=True)
+    train_image_batch, train_label_batch = data_pipe(
+                                            train_file_array,
+                                            train_label_array,
+                                            num_epochs=None,
+                                            shuffle=True)
+    valid_image_batch, valid_label_batch = data_pipe(
+                                            valid_file_array,
+                                            valid_label_array,
+                                            num_epochs=None,
+                                            shuffle=True)
 
     init_op = tf.group(tf.local_variables_initializer(),
                        tf.global_variables_initializer())
@@ -140,8 +140,11 @@ elif EVAL:
         generate_data_skeleton(root_dir=IMAGE_PATH + 'test_stg1',
                                valid_size=None)
     # no shuffling or more than 1 epoch of test set, only through once.
-    test_image_batch, _ = \
-        data_pipe(test_file_array, _, num_epochs=1, shuffle=False)
+    test_image_batch, _ = data_pipe(
+                            test_file_array,
+                            _,
+                            num_epochs=1,
+                            shuffle=False)
 
     init_op = tf.group(tf.local_variables_initializer(),
                        tf.global_variables_initializer())
