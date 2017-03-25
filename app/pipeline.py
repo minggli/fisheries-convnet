@@ -60,8 +60,7 @@ def make_queue(paths_to_image, labels, num_epochs=None, shuffle=True):
 
 def decode_transform(input_queue, shape=IMAGE_SHAPE, standardize=True):
     """a single decode and transform function that applies standardization with
-    no mean centralisation. Sparsed data such as image data, mean
-    centralisation is not suited.
+    mean centralisation.
     """
     # input_queue allows slicing with 0: path_to_image, 1: encoded label
     label_queue = input_queue[1]
@@ -72,7 +71,7 @@ def decode_transform(input_queue, shape=IMAGE_SHAPE, standardize=True):
         off_value=0)
 
     image_queue = tf.read_file(input_queue[0])
-    original_image = tf.image.decode_image(image_queue, channels=shape[2])
+    original_image = tf.image.decode_jpeg(image_queue, channels=shape[2])
 
     # crop larger images (e.g. 1280*974) to 1280*720, this func doesn't resize.
     cropped_image_content = tf.image.resize_image_with_crop_or_pad(
@@ -126,3 +125,18 @@ def data_pipe(paths_to_image, labels, num_epochs=None, shuffle=True):
     image_batch, label_batch = \
         batch_generator(resized_image_queue, label_queue, shuffle=shuffle)
     return image_batch, label_batch
+
+
+def multi_threading(func):
+    """decorator using tensorflow threading ability."""
+    def wrapper(*args, **kwargs):
+        coord = tf.train.Coordinator()
+        threads = tf.train.start_queue_runners(coord=coord)
+        func_output = func(*args, **kwargs)
+        try:
+            coord.request_stop()
+            coord.join(threads, stop_grace_period_secs=5)
+        except (tf.errors.CancelledError, RuntimeError) as e:
+            pass
+        return func_output
+    return wrapper

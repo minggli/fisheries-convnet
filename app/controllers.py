@@ -3,20 +3,7 @@ import os
 import time
 import tensorflow as tf
 
-
-def multi_threading(func):
-    """decorator using tensorflow threading ability."""
-    def wrapper(*args, **kwargs):
-        coord = tf.train.Coordinator()
-        threads = tf.train.start_queue_runners(coord=coord)
-        func_output = func(*args, **kwargs)
-        try:
-            coord.request_stop()
-            coord.join(threads, stop_grace_period_secs=10)
-        except (tf.errors.CancelledError, RuntimeError) as e:
-            pass
-        return func_output
-    return wrapper
+from app.pipeline import multi_threading
 
 
 def timeit(func):
@@ -37,6 +24,7 @@ def timeit(func):
 def train(n, sess, x, _y, keep_prob, train_image_batch, train_label_batch,
           valid_image_batch, valid_label_batch, optimiser, metric, loss):
     """train neural network and produce accuracies with validation set."""
+    tf.train.start_queue_runners(sess=sess)
 
     for global_step in range(n):
         train_image, train_label = \
@@ -61,7 +49,6 @@ def train(n, sess, x, _y, keep_prob, train_image_batch, train_label_batch,
 @timeit
 def predict(sess, x, keep_prob, logits, test_image_batch):
     """predict test set using graph previously trained and saved."""
-
     complete_probs = list()
     for _ in range(2000):
         try:
@@ -118,7 +105,7 @@ def save_session(sess, path):
     from datetime import datetime
 
     now = datetime.now().strftime('%Y-%m-%d_%H:%M:%S')
-    saver = tf.train.Saver()
+    saver = tf.train.Saver(max_to_keep=5)
     if not os.path.exists(path):
         os.makedirs(path)
     save_path = saver.save(sess, path + "model_{0}.ckpt".format(now))
