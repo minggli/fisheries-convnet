@@ -11,7 +11,7 @@ from app.controllers import (train, save_session, predict, submit,
                              restore_session)
 
 
-# tf.set_random_seed(14)
+tf.set_random_seed(7)
 sess = tf.Session()
 
 cnn = ConvolutionalNeuralNet(shape=IMAGE_SHAPE)
