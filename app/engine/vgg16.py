@@ -14,6 +14,10 @@ from app.controllers import (train, save_session, predict, submit,
 tf.set_random_seed(7)
 sess = tf.Session()
 
+flattened_shape = (None,
+                   IMAGE_SHAPE[2],
+                   IMAGE_SHAPE[0] * IMAGE_SHAPE[1])
+
 
 def weight_variable(shape):
     initial = tf.truncated_normal(shape, stddev=0.1)
