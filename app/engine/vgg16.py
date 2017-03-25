@@ -71,15 +71,15 @@ fully_connected_layer_1 = cnn.add_dense_layer(
                             [[23 * 40 * 8, 32], [32], [-1, 23 * 40 * 8]],
                             func='relu'
                             )
-drop_out_layer_1 = cnn.add_drop_out_layer(fully_connected_layer_1, keep_prob)
+# drop_out_layer_1 = cnn.add_drop_out_layer(fully_connected_layer_1, keep_prob)
 fully_connected_layer_2 = cnn.add_dense_layer(
-                            drop_out_layer_1,
+                            fully_connected_layer_1,
                             [[32, 32], [32], [-1, 32]],
                             func='relu'
                             )
-drop_out_layer_2 = cnn.add_drop_out_layer(fully_connected_layer_2, keep_prob)
-logits = cnn.add_read_out_layer(drop_out_layer_2, [[32, 8], [8]])
-# [batch_size]
+# drop_out_layer_2 = cnn.add_drop_out_layer(fully_connected_layer_2, keep_prob)
+logits = cnn.add_read_out_layer(fully_connected_layer_2, [[32, 8], [8]])
+# [batch_size, 8]
 
 # applying label weights to loss function
 class_weight = tf.constant([[0.544876886, 0.947047922, 0.969023034,
@@ -96,10 +96,10 @@ loss = tf.reduce_mean(cross_entropy)
 # loss = tf.reduce_mean(tf.multiply(weight_per_label, cross_entropy))
 
 # add L2 regularization on weights from readout layer
-out_weights = [var for var in tf.trainable_variables()
-               if var.name.startswith('Variable_')][-2]
-regularizer = tf.nn.l2_loss(out_weights)
-loss = tf.reduce_mean(loss + BETA * regularizer)
+# out_weights = [var for var in tf.trainable_variables()
+#                if var.name.startswith('Variable_')][-2]
+# regularizer = tf.nn.l2_loss(out_weights)
+# loss = tf.reduce_mean(loss + BETA * regularizer)
 
 # train Ops
 train_step = tf.train.RMSPropOptimizer(learning_rate=ALPHA).minimize(loss)
