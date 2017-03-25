@@ -98,7 +98,7 @@ weight_per_label = tf.transpose(tf.matmul(_y, tf.transpose(class_weight)))
 out_weights = [var for var in tf.trainable_variables()
                if var.name == 'Variable_30:0'][0]
 regularizer = tf.nn.l2_loss(out_weights)
-loss = tf.reduce_mean(loss + BETA * regularizer)
+# loss = tf.reduce_mean(loss + BETA * regularizer)
 
 # train Ops
 train_step = tf.train.RMSPropOptimizer(learning_rate=ALPHA).minimize(loss)
