@@ -11,7 +11,7 @@ from app.controllers import (train, save_session, predict, submit,
                              restore_session)
 
 
-# tf.set_random_seed(7)
+tf.set_random_seed(7)
 sess = tf.Session()
 
 cnn = ConvolutionalNeuralNet(shape=IMAGE_SHAPE)
@@ -101,7 +101,7 @@ regularizer = tf.nn.l2_loss(out_weights)
 loss = tf.reduce_mean(loss + BETA * regularizer)
 
 # train Ops
-train_step = tf.train.RMSPropOptimizer(learning_rate=ALPHA).minimize(loss)
+train_step = tf.train.AdamOptimizer(learning_rate=ALPHA).minimize(loss)
 
 # eval
 correct_prediction = tf.equal(tf.argmax(logits, 1), tf.argmax(_y, 1))
