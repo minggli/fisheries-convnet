@@ -91,8 +91,8 @@ cross_entropy = \
 loss = tf.reduce_mean(cross_entropy)
 
 # weighted loss per class
-weight_per_label = tf.transpose(tf.matmul(_y, tf.transpose(class_weight)))
-loss = tf.reduce_mean(tf.multiply(weight_per_label, cross_entropy))
+# weight_per_label = tf.transpose(tf.matmul(_y, tf.transpose(class_weight)))
+# loss = tf.reduce_mean(tf.multiply(weight_per_label, cross_entropy))
 
 # add L2 regularization on weights from readout layer
 out_weights = [var for var in tf.trainable_variables()
@@ -111,7 +111,7 @@ accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
 if not EVAL:
     # prepare data feed
     train_file_array, train_label_array, valid_file_array, valid_label_array =\
-        generate_data_skeleton(root_dir=IMAGE_PATH + 'train', valid_size=.15)
+        generate_data_skeleton(root_dir=IMAGE_PATH + 'train/ALB', valid_size=.15)
     train_image_batch, train_label_batch = \
         data_pipe(train_file_array,
                   train_label_array,
