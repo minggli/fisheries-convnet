@@ -177,10 +177,10 @@ loss = tf.reduce_mean(cross_entropy)
 # loss = tf.reduce_mean(tf.multiply(weight_per_label, cross_entropy))
 
 # add L2 regularization on weights from readout layer
-out_weights = [var for var in tf.trainable_variables()
-               if var.name == 'Variable_30:0'][0]
-regularizer = tf.nn.l2_loss(out_weights)
-loss = tf.reduce_mean(loss + BETA * regularizer)
+# out_weights = [var for var in tf.trainable_variables()
+#                if var.name == 'Variable_30:0'][0]
+# regularizer = tf.nn.l2_loss(out_weights)
+# loss = tf.reduce_mean(loss + BETA * regularizer)
 
 # train Ops
 train_step = tf.train.RMSPropOptimizer(learning_rate=ALPHA).minimize(loss)
