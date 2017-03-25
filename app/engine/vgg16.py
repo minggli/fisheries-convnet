@@ -144,7 +144,7 @@ with tf.name_scope('dense_conn_1'):
     W_fc1 = weight_variable([3 * 5 * 48, 2048])
     b_fc1 = bias_variable([2048])
 
-    h_pool4_flat = tf.reshape(h_pool2, [-1, 3 * 5 * 48])
+    h_pool4_flat = tf.reshape(h_pool5, [-1, 3 * 5 * 48])
     h_fc1 = tf.nn.relu(tf.matmul(h_pool4_flat, W_fc1) + b_fc1)
 
 with tf.name_scope('dense_conn_2'):
