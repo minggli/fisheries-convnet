@@ -36,10 +36,10 @@ conv_layer_13 = cnn.add_conv_layer(conv_layer_12, [[3, 3, 48, 48], [48]])
 max_pool_5 = cnn.add_pooling_layer(conv_layer_13)
 fc1 = cnn.add_dense_layer(max_pool_5, [[3 * 5 * 48, 512], [512],
                                        [-1, 3 * 5 * 48]])
-drop_out_layer_1 = cnn.add_drop_out_layer(fc1, keep_prob)
-fc2 = cnn.add_dense_layer(drop_out_layer_1, [[512, 64], [64], [-1, 512]])
-drop_out_layer_2 = cnn.add_drop_out_layer(fc2, keep_prob)
-logits = cnn.add_read_out_layer(drop_out_layer_2, [[64, 8], [8]])
+# drop_out_layer_1 = cnn.add_drop_out_layer(fc1, keep_prob)
+fc2 = cnn.add_dense_layer(fc1, [[512, 64], [64], [-1, 512]])
+# drop_out_layer_2 = cnn.add_drop_out_layer(fc2, keep_prob)
+logits = cnn.add_read_out_layer(fc2, [[64, 8], [8]])
 # [batch_size, 8]
 
 # default loss function
