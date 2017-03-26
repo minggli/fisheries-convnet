@@ -10,88 +10,47 @@ from app.pipeline import data_pipe, generate_data_skeleton
 from app.controllers import (train, save_session, predict, submit,
                              restore_session)
 
-
-tf.set_random_seed(7)
 sess = tf.Session()
-
 cnn = ConvolutionalNeuralNet(shape=IMAGE_SHAPE)
 
 x, _y = cnn.x, cnn._y
 keep_prob = tf.placeholder(tf.float32)
 
-conv_layer_1 = cnn.add_conv_layer(x, [[3, 3, 3, 12], [12]], func='relu')
-conv_layer_2 = cnn.add_conv_layer(conv_layer_1,
-                                  [[3, 3, 12, 12], [12]],
-                                  func='relu')
+conv_layer_1 = cnn.add_conv_layer(x, [[3, 3, 3, 12], [12]])
+conv_layer_2 = cnn.add_conv_layer(conv_layer_1, [[3, 3, 12, 12], [12]])
 max_pool_1 = cnn.add_pooling_layer(conv_layer_2)
-# (45, 80, *)
-conv_layer_3 = cnn.add_conv_layer(max_pool_1,
-                                  [[3, 3, 12, 24], [24]],
-                                  func='relu')
-conv_layer_4 = cnn.add_conv_layer(conv_layer_3,
-                                  [[3, 3, 24, 24], [24]],
-                                  func='relu')
+conv_layer_3 = cnn.add_conv_layer(max_pool_1, [[3, 3, 12, 24], [24]])
+conv_layer_4 = cnn.add_conv_layer(conv_layer_3, [[3, 3, 24, 24], [24]])
 max_pool_2 = cnn.add_pooling_layer(conv_layer_4)
-# (23, 40, *)
-conv_layer_5 = cnn.add_conv_layer(max_pool_2,
-                                  [[3, 3, 24, 48], [48]],
-                                  func='relu')
-conv_layer_6 = cnn.add_conv_layer(conv_layer_5,
-                                  [[3, 3, 48, 48], [48]],
-                                  func='relu')
-conv_layer_7 = cnn.add_conv_layer(conv_layer_6,
-                                  [[3, 3, 48, 48], [48]],
-                                  func='relu')
+conv_layer_5 = cnn.add_conv_layer(max_pool_2, [[3, 3, 24, 48], [48]])
+conv_layer_6 = cnn.add_conv_layer(conv_layer_5, [[3, 3, 48, 48], [48]])
+conv_layer_7 = cnn.add_conv_layer(conv_layer_6, [[3, 3, 48, 48], [48]])
 max_pool_3 = cnn.add_pooling_layer(conv_layer_7)
-# (128, 20, *)
-conv_layer_8 = cnn.add_conv_layer(max_pool_3,
-                                  [[3, 3, 48, 96], [96]],
-                                  func='relu')
-conv_layer_9 = cnn.add_conv_layer(conv_layer_8,
-                                  [[3, 3, 96, 96], [96]],
-                                  func='relu')
-conv_layer_10 = cnn.add_conv_layer(conv_layer_9,
-                                   [[3, 3, 96, 96], [96]],
-                                   func='relu')
+conv_layer_8 = cnn.add_conv_layer(max_pool_3, [[3, 3, 48, 96], [96]])
+conv_layer_9 = cnn.add_conv_layer(conv_layer_8, [[3, 3, 96, 96], [96]])
+conv_layer_10 = cnn.add_conv_layer(conv_layer_9, [[3, 3, 96, 96], [96]])
 max_pool_4 = cnn.add_pooling_layer(conv_layer_10)
-# (64, 10, *)
-conv_layer_11 = cnn.add_conv_layer(max_pool_4,
-                                   [[3, 3, 96, 96], [96]],
-                                   func='relu')
-conv_layer_12 = cnn.add_conv_layer(conv_layer_11,
-                                   [[3, 3, 96, 96], [96]],
-                                   func='relu')
-conv_layer_13 = cnn.add_conv_layer(conv_layer_12,
-                                   [[3, 3, 96, 96], [96]],
-                                   func='relu')
-max_pool_4 = cnn.add_pooling_layer(conv_layer_13)
-# (3, 5, *)
-fully_connected_layer_1 = cnn.add_dense_layer(
-                            max_pool_4,
-                            [[3 * 5 * 96, 2048], [2048], [-1, 3 * 5 * 96]],
-                            func='relu'
-                            )
-drop_out_layer_1 = cnn.add_drop_out_layer(fully_connected_layer_1, keep_prob)
-fully_connected_layer_2 = cnn.add_dense_layer(
-                            drop_out_layer_1,
-                            [[2048, 1024], [1024], [-1, 2048]],
-                            func='relu'
-                            )
-drop_out_layer_2 = cnn.add_drop_out_layer(fully_connected_layer_2, keep_prob)
+conv_layer_11 = cnn.add_conv_layer(max_pool_4, [[3, 3, 96, 96], [96]])
+conv_layer_12 = cnn.add_conv_layer(conv_layer_11, [[3, 3, 96, 96], [96]])
+conv_layer_13 = cnn.add_conv_layer(conv_layer_12, [[3, 3, 96, 96], [96]])
+max_pool_5 = cnn.add_pooling_layer(conv_layer_13)
+fc1 = cnn.add_dense_layer(max_pool_5, [[3 * 5 * 96, 2048], [2048],
+                                       [-1, 3 * 5 * 96]])
+drop_out_layer_1 = cnn.add_drop_out_layer(fc1, keep_prob)
+fc2 = cnn.add_dense_layer(drop_out_layer_1, [[2048, 1024], [1024], [-1, 2048]])
+drop_out_layer_2 = cnn.add_drop_out_layer(fc2, keep_prob)
 logits = cnn.add_read_out_layer(drop_out_layer_2, [[1024, 8], [8]])
 # [batch_size, 8]
+
+# default loss function
+cross_entropy = \
+        tf.nn.softmax_cross_entropy_with_logits(logits=logits, labels=_y)
+loss = tf.reduce_mean(cross_entropy)
 
 # applying label weights to loss function
 class_weight = tf.constant([[0.544876886, 0.947047922, 0.969023034,
                              0.982261054, 0.876886418, 0.920836643,
                              0.953402171, 0.805665872]])
-
-# loss function
-cross_entropy = \
-        tf.nn.softmax_cross_entropy_with_logits(logits=logits, labels=_y)
-loss = tf.reduce_mean(cross_entropy)
-
-# weighted loss per class
 weight_per_label = tf.transpose(tf.matmul(_y, tf.transpose(class_weight)))
 loss = tf.reduce_mean(tf.multiply(weight_per_label, cross_entropy))
 
@@ -108,6 +67,8 @@ train_step = tf.train.RMSPropOptimizer(learning_rate=ALPHA).minimize(loss)
 correct_prediction = tf.equal(tf.argmax(logits, 1), tf.argmax(_y, 1))
 accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
 
+# saver
+saver = tf.train.Saver(max_to_keep=5, var_list=tf.trainable_variables())
 
 if not EVAL:
     # prepare data feed
@@ -132,7 +93,7 @@ if not EVAL:
         train(MAX_STEPS, sess, x, _y, keep_prob, train_image_batch,
               train_label_batch, valid_image_batch, valid_label_batch,
               train_step, accuracy, loss)
-        save_session(sess, path=MODEL_PATH)
+        save_session(sess, path=MODEL_PATH, sav=saver)
     del sess
 
 elif EVAL:
@@ -147,9 +108,8 @@ elif EVAL:
                             num_epochs=1,
                             shuffle=False)
 
-    init_op = tf.group(tf.local_variables_initializer(),
-                       tf.global_variables_initializer())
-    sess.run(init_op)
+    # only need to initiate data pipeline stored in local variable
+    sess.run(tf.local_variables_initializer())
 
     with sess:
         restore_session(sess, MODEL_PATH)

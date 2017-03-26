@@ -55,8 +55,6 @@ def predict(sess, x, keep_prob, logits, test_image_batch):
             test_image = sess.run(test_image_batch)
             probs = sess.run(tf.nn.softmax(logits),
                              feed_dict={x: test_image, keep_prob: 1.0})
-            for sample in probs:
-                print(sample)
             complete_probs.append(probs)
         except tf.errors.OutOfRangeError as e:
             # pipe exhausted with pre-determined number of epochs i.e. 1
@@ -100,13 +98,12 @@ def restore_session(sess, path):
 
 
 @timeit
-def save_session(sess, path):
+def save_session(sess, path, sav):
     """save hard trained model for future predicting."""
     from datetime import datetime
 
     now = datetime.now().strftime('%Y-%m-%d_%H:%M:%S')
-    saver = tf.train.Saver(max_to_keep=5)
     if not os.path.exists(path):
         os.makedirs(path)
-    save_path = saver.save(sess, path + "model_{0}.ckpt".format(now))
+    save_path = sav.save(sess, path + "model_{0}.ckpt".format(now))
     print("Model saved in: {0}".format(save_path))
