@@ -52,7 +52,7 @@ class_weight = tf.constant([[0.544876886, 0.947047922, 0.969023034,
                              0.982261054, 0.876886418, 0.920836643,
                              0.953402171, 0.805665872]])
 weight_per_label = tf.transpose(tf.matmul(_y, tf.transpose(class_weight)))
-loss = tf.reduce_mean(tf.multiply(weight_per_label, cross_entropy))
+# loss = tf.reduce_mean(tf.multiply(weight_per_label, cross_entropy))
 
 # add L2 regularization on weights from readout layer
 out_weights = [var for var in tf.trainable_variables()

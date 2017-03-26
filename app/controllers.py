@@ -24,14 +24,13 @@ def timeit(func):
 def train(n, sess, x, _y, keep_prob, train_image_batch, train_label_batch,
           valid_image_batch, valid_label_batch, optimiser, metric, loss):
     """train neural network and produce accuracies with validation set."""
-    tf.train.start_queue_runners(sess=sess)
 
     for global_step in range(n):
         train_image, train_label = \
             sess.run([train_image_batch, train_label_batch])
         optimiser.run(feed_dict={x: train_image,
                                  _y: train_label,
-                                 keep_prob: .5})
+                                 keep_prob: .7})
         print(global_step, train_label[0])
 
         if global_step % 10 == 0:
