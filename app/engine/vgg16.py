@@ -36,10 +36,10 @@ conv_layer_13 = cnn.add_conv_layer(conv_layer_12, [[3, 3, 48, 48], [48]])
 max_pool_5 = cnn.add_pooling_layer(conv_layer_13)
 fc1 = cnn.add_dense_layer(max_pool_5, [[3 * 5 * 48, 512], [512],
                                        [-1, 3 * 5 * 48]])
-# drop_out_layer_1 = cnn.add_drop_out_layer(fc1, keep_prob)
-fc2 = cnn.add_dense_layer(fc1, [[512, 64], [64], [-1, 512]])
-# drop_out_layer_2 = cnn.add_drop_out_layer(fc2, keep_prob)
-logits = cnn.add_read_out_layer(fc2, [[64, 8], [8]])
+drop_out_layer_1 = cnn.add_drop_out_layer(fc1, keep_prob)
+fc2 = cnn.add_dense_layer(drop_out_layer_1, [[512, 64], [64], [-1, 512]])
+drop_out_layer_2 = cnn.add_drop_out_layer(fc2, keep_prob)
+logits = cnn.add_read_out_layer(drop_out_layer_2, [[64, 8], [8]])
 # [batch_size, 8]
 
 # default loss function
@@ -52,7 +52,7 @@ class_weight = tf.constant([[0.544876886, 0.947047922, 0.969023034,
                              0.982261054, 0.876886418, 0.920836643,
                              0.953402171, 0.805665872]])
 weight_per_label = tf.transpose(tf.matmul(_y, tf.transpose(class_weight)))
-# loss = tf.reduce_mean(tf.multiply(weight_per_label, cross_entropy))
+loss = tf.reduce_mean(tf.multiply(weight_per_label, cross_entropy))
 
 # add L2 regularization on weights from readout layer
 out_weights = [var for var in tf.trainable_variables()
