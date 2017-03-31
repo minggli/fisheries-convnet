@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+ASSETS_PATH = '.assets/'
 MODEL_PATH = './trained_models/'
 IMAGE_PATH = './data/'
 IMAGE_SHAPE = (90, 160, 3)

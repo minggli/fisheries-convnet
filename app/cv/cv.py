@@ -16,10 +16,12 @@ http://docs.opencv.org/trunk/dc/d88/tutorial_traincascade.html
 
 import cv2
 
-face_cascade = cv2.CascadeClassifier('app/cv/haarcascade_frontalface_default.xml')
-eye_cascade = cv2.CascadeClassifier('app/cv/haarcascade_eye.xml')
+face_cascade = \
+    cv2.CascadeClassifier('app/assets/haarcascade_frontalface_default.xml')
+eye_cascade = \
+    cv2.CascadeClassifier('app/assets/haarcascade_eye.xml')
 
-img = cv2.imread('app/cv/face_detection.jpg')
+img = cv2.imread('app/assets/face_detection.jpg')
 gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 
 faces = face_cascade.detectMultiScale(gray, 1.3, 5)
