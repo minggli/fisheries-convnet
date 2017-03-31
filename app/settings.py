@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 ASSETS_PATH = '.assets/'
+CV_SAMPLE_PATH = './data/cv_samples/'
 MODEL_PATH = './trained_models/'
 IMAGE_PATH = './data/'
 IMAGE_SHAPE = (90, 160, 3)
