@@ -4,7 +4,7 @@ sampling
 
 obtain positive and negative samples from ImageNet to train Haar Cascade.
 """
-
+import random
 import requests
 
 BASE_URL = 'http://image-net.org/api/text/imagenet.synset.geturls?wnid={0}'
@@ -26,12 +26,12 @@ synset_ids_neg = {
 synset_urls_pos = dict()
 synset_urls_neg = dict()
 
-for key, wnid in synset_ids_pos.items():
-    r = requests.get(BASE_URL.format(wnid))
-    synset_urls_pos[key] = r.text.split('\r\n')
-    print('{0}: {1}'.format(key, len(synset_urls_pos[key])))
 
-for key, wnid in synset_ids_neg.items():
-    r = requests.get(BASE_URL.format(wnid))
-    synset_urls_neg[key] = r.text.split('\r\n')
-    print('{0}: {1}'.format(key, len(synset_urls_neg[key])))
+def generate_sample_skeleton(synset_dict, sample_size):
+    """produces urls of images belonging to certain synset on ImageNet
+    """
+    synset_urls = list()
+    for key, wnid in synset_dict.items():
+        r = requests.get(BASE_URL.format(wnid))
+        synset_urls.append(r.text.split('\r\n'))
+    return synset_urls

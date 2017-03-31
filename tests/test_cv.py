@@ -21,6 +21,7 @@ face_cascade = \
 eye_cascade = \
     cv2.CascadeClassifier('app/assets/haarcascade_eye.xml')
 
+# reads in image in BGR rather than RGB format
 img = cv2.imread('app/assets/face_detection.jpg')
 gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 
