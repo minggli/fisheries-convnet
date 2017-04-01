@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-sampling
+fetchsamples
 
 obtain positive and negative samples from ImageNet to train Haar Cascade.
 """
@@ -78,7 +78,7 @@ def retrieve_image(image_url, path):
             shutil.copyfileobj(r.raw, f)
 
 
-sample_pos = generate_sample_skeleton(SYNSET_ID_POS, sample_size=1000)
+sample_pos = generate_sample_skeleton(SYNSET_ID_POS, sample_size=5000)
 sample_neg = generate_sample_skeleton(SYNSET_ID_NEG, sample_size=5000)
 
 batch_retrieve(func=retrieve_image,
