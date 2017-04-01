@@ -11,6 +11,7 @@ ALPHA = 1e-3
 BETA = 1e-2
 
 # Object Detection
+HAARCASCADE = './app/cv/fishcascade/'
 BASE_URL = 'http://image-net.org/api/text/imagenet.synset.geturls?wnid={0}'
 CV_SAMPLE_PATH = './data/cv_samples/'
 CV_CROPPED_SAMPLE_PATH = './data/cv_samples/pos_cropped/'
