@@ -3,6 +3,7 @@
 *.pyo
 *.csv
 *.jpg
+*.dat
 env
 env*
 dist
