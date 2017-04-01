@@ -15,14 +15,14 @@ import tensorflow as tf
 from sklearn import model_selection
 
 
-def folder_traverse(root_dir):
+def folder_traverse(root_dir, ext=('.jpg')):
     """map all image-only files in a folder"""
     if not os.path.exists(root_dir):
         raise RuntimeError('{0} doesn\'t exist.'.format(root_dir))
     file_structure = dict()
     # using os.walk instead of new os.scandir for backward compatibility reason
     for root, _, files in os.walk(root_dir):
-        image_list = [i for i in files if i.endswith('.jpg')]
+        image_list = [i for i in files if i.endswith(ext)]
         if image_list:
             file_structure[root] = image_list
     return file_structure

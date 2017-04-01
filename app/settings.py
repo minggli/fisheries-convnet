@@ -13,7 +13,6 @@ BETA = 1e-2
 
 
 # Object Detection
-ASSETS_PATH = './app/assets/'
 BASE_URL = 'http://image-net.org/api/text/imagenet.synset.geturls?wnid={0}'
 CV_SAMPLE_PATH = './data/cv_samples/'
 CV_CROPPED_SAMPLE_PATH = './data/cv_samples/pos_cropped/'
