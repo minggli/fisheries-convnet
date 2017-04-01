@@ -15,6 +15,11 @@ http://docs.opencv.org/trunk/dc/d88/tutorial_traincascade.html
 """
 
 import cv2
+import subprocess
+from app.settings import HAARCASCADE
 
 # load trained Haar cascade classifier
-fish_cascade = cv2.CascadeClassifier('app/assets/haarcascade_fish.xml')
+# fish_cascade = cv2.CascadeClassifier('app/assets/haarcascade_fish.xml')
+
+
+# subprocess.call('scripts/sampletrain.sh', shell=True)
