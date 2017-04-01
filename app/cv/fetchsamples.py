@@ -10,15 +10,16 @@ import shutil
 import requests
 import uuid
 
+from multiprocessing import Pool
+from itertools import repeat
 from socket import timeout
 from requests.exceptions import ConnectTimeout, ConnectionError
 
 from app.controllers import timeit
-from app.settings import CV_SAMPLE_PATH, SYNSET_ID_POS, SYNSET_ID_NEG, BASE_URL
 
 
 @timeit
-def generate_sample_skeleton(synset_dict, sample_size, base_url=BASE_URL):
+def generate_sample_skeleton(synset_dict, sample_size, base_url):
     """produces urls of images belonging to certain synset on ImageNet"""
     synset_urls = list()
     for key, wnid in synset_dict.items():
@@ -48,13 +49,6 @@ def generate_sample_skeleton(synset_dict, sample_size, base_url=BASE_URL):
 def batch_retrieve(func, iterable, path):
     """processing through iterable (e.g. list)"""
 
-    import os
-    from multiprocessing import Pool
-    from itertools import repeat
-
-    if not os.path.exists(path):
-        os.makedirs(path)
-
     with Pool(4) as p:
         p.starmap(func, zip(iterable, repeat(path)))
 
@@ -76,14 +70,3 @@ def retrieve_image(image_url, path):
         with open(path + '/' + fname, 'wb') as f:
             r.raw.decode_content = True
             shutil.copyfileobj(r.raw, f)
-
-
-sample_pos = generate_sample_skeleton(SYNSET_ID_POS, sample_size=5000)
-sample_neg = generate_sample_skeleton(SYNSET_ID_NEG, sample_size=5000)
-
-batch_retrieve(func=retrieve_image,
-               iterable=sample_neg,
-               path=CV_SAMPLE_PATH + 'neg')
-batch_retrieve(func=retrieve_image,
-               iterable=sample_pos,
-               path=CV_SAMPLE_PATH + 'pos')

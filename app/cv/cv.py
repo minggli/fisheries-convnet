@@ -14,12 +14,27 @@ guide to train a Haar Cascade:
 http://docs.opencv.org/trunk/dc/d88/tutorial_traincascade.html
 """
 
+
 import cv2
-import subprocess
-from app.settings import HAARCASCADE
+from app.main import FETCH
+from app.cv.fetchsamples import (generate_sample_skeleton, batch_retrieve,
+                                 retrieve_image)
+from app.settings import (HAARCASCADE, CV_SAMPLE_PATH, SYNSET_ID_POS,
+                          SYNSET_ID_NEG, BASE_URL)
+
 
 # load trained Haar cascade classifier
 # fish_cascade = cv2.CascadeClassifier('app/assets/haarcascade_fish.xml')
 
+if FETCH:
+    sample_pos = generate_sample_skeleton(SYNSET_ID_POS, 5e3, BASE_URL)
+    sample_neg = generate_sample_skeleton(SYNSET_ID_NEG, 5e3, BASE_URL)
+
+    batch_retrieve(func=retrieve_image,
+                   iterable=sample_neg,
+                   path=CV_SAMPLE_PATH + 'neg')
+    batch_retrieve(func=retrieve_image,
+                   iterable=sample_pos,
+                   path=CV_SAMPLE_PATH + 'pos')
 
 # subprocess.call('scripts/sampletrain.sh', shell=True)

@@ -6,13 +6,14 @@ Targeted positive images must have been cropped and have only one object as
 this script will take assumption that from (0, 0) to (width, height), there is
 the entirety of the single object.
 """
-
+import os
 from PIL import Image
 
 from app.pipeline import folder_traverse
 from app.settings import CV_CROPPED_SAMPLE_PATH, CV_SAMPLE_PATH, HAARCASCADE
 
-file_structure = folder_traverse(CV_CROPPED_SAMPLE_PATH)
+file_structure = folder_traverse(
+                os.path.join(os.path.realpath('.'), CV_CROPPED_SAMPLE_PATH))
 f = open(HAARCASCADE + 'positives.dat', 'w')
 for folder, filelist in file_structure.items():
     for filename in filelist:
@@ -21,7 +22,8 @@ for folder, filelist in file_structure.items():
         f.write(string)
 f.close()
 
-file_structure = folder_traverse(CV_SAMPLE_PATH + 'neg/')
+file_structure = folder_traverse(
+                os.path.join(os.path.realpath('.'), CV_SAMPLE_PATH + 'neg/'))
 f = open(HAARCASCADE + 'negatives.dat', 'w')
 for folder, filelist in file_structure.items():
     for filename in filelist:
