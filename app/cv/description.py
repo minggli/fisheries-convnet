@@ -14,7 +14,7 @@ from app.settings import CV_CROPPED_SAMPLE_PATH, CV_SAMPLE_PATH
 
 file_structure = folder_traverse(
                 os.path.join(os.path.realpath('.'), CV_CROPPED_SAMPLE_PATH))
-f = open('positives.dat', 'w')
+f = open(os.path.dirname(os.path.realpath(__file__)) + '/positives.dat', 'w')
 for folder, filelist in file_structure.items():
     for filename in filelist:
         h, w = cv2.imread(folder+filename, -1).shape[:2]
@@ -24,7 +24,7 @@ f.close()
 
 file_structure = folder_traverse(
                 os.path.join(os.path.realpath('.'), CV_SAMPLE_PATH + 'neg/'))
-f = open('negatives.dat', 'w')
+f = open(os.path.dirname(os.path.realpath(__file__)) + '/negatives.dat', 'w')
 for folder, filelist in file_structure.items():
     for filename in filelist:
         img = cv2.imread(folder+filename, -1)

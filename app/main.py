@@ -9,4 +9,5 @@ if __name__ == '__main__':
     if FETCH:
         from .cv import cv
     else:
-        from .engine import vgg16
+        if EVAL:
+            from .engine import vgg16
