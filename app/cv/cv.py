@@ -45,17 +45,16 @@ if CV_TRAIN:
 cascade = cv2.CascadeClassifier(HAARCASCADE + 'cascade.xml')
 
 file_array, _ = generate_data_skeleton(
-                os.path.join(os.path.realpath('.'), IMAGE_PATH) + 'train/ALB')
+    os.path.join(os.path.realpath('.'), IMAGE_PATH) + 'cv_samples/pos_cropped')
 
 img = cv2.imread(random.choice(file_array))
 gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 
-fish = cascade.detectMultiScale(gray, 3, 10)
+fish = cascade.detectMultiScale(gray)
 
 for (x, y, w, h) in fish:
+    print(x, y, w, h)
     cv2.rectangle(img, (x, y), (x + w, y + h), (255, 0, 0), 2)
-    roi_gray = gray[y:y+h, x:x+w]
-    roi_color = img[y:y+h, x:x+w]
 
 cv2.imshow('img', img)
 cv2.waitKey(0)
