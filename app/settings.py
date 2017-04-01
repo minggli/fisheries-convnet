@@ -14,7 +14,6 @@ BETA = 1e-2
 BASE_URL = 'http://image-net.org/api/text/imagenet.synset.geturls?wnid={0}'
 CV_SAMPLE_PATH = './data/cv_samples/'
 CV_CROPPED_SAMPLE_PATH = './data/cv_samples/pos_cropped/'
-HAARCASCADE = './app/cv/haarcascade/'
 SYNSET_ID_POS = {
                     'Tuna_Bluefin': 'n02627292',
                     'Tuna_Yellowfin': 'n02627532',

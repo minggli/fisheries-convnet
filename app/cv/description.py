@@ -10,11 +10,11 @@ import os
 from PIL import Image
 
 from app.pipeline import folder_traverse
-from app.settings import CV_CROPPED_SAMPLE_PATH, CV_SAMPLE_PATH, HAARCASCADE
+from app.settings import CV_CROPPED_SAMPLE_PATH, CV_SAMPLE_PATH
 
 file_structure = folder_traverse(
                 os.path.join(os.path.realpath('.'), CV_CROPPED_SAMPLE_PATH))
-f = open(HAARCASCADE + 'positives.dat', 'w')
+f = open('positives.dat', 'w')
 for folder, filelist in file_structure.items():
     for filename in filelist:
         w, h = Image.open(folder+filename).size
@@ -24,7 +24,7 @@ f.close()
 
 file_structure = folder_traverse(
                 os.path.join(os.path.realpath('.'), CV_SAMPLE_PATH + 'neg/'))
-f = open(HAARCASCADE + 'negatives.dat', 'w')
+f = open('negatives.dat', 'w')
 for folder, filelist in file_structure.items():
     for filename in filelist:
         string = '{0}{1}\n'.format(folder, filename)
