@@ -14,8 +14,6 @@ import tensorflow as tf
 
 from sklearn import model_selection
 
-from .settings import IMAGE_SHAPE, BATCH_SIZE
-
 
 def folder_traverse(root_dir):
     """map all image-only files in a folder"""
@@ -65,26 +63,26 @@ def make_queue(paths_to_image, labels, num_epochs=None, shuffle=True):
     return input_queue
 
 
-def decode_transform(input_queue, shape=IMAGE_SHAPE, standardize=True):
+def decode_transform(input_queue, shape=None, standardize=True):
     """a single decode and transform function that applies standardization with
     mean centralisation.
     """
     # input_queue allows slicing with 0: path_to_image, 1: encoded label
     label_queue = input_queue[1]
     one_hot_label_queue = tf.one_hot(
-        indices=label_queue,
-        depth=8,
-        on_value=1,
-        off_value=0)
+                                indices=label_queue,
+                                depth=8,
+                                on_value=1,
+                                off_value=0)
 
     image_queue = tf.read_file(input_queue[0])
     original_image = tf.image.decode_jpeg(image_queue, channels=shape[2])
 
     # crop larger images (e.g. 1280*974) to 1280*720, this func doesn't resize.
     cropped_image_content = tf.image.resize_image_with_crop_or_pad(
-        image=original_image,
-        target_height=720,
-        target_width=1280)
+                                image=original_image,
+                                target_height=720,
+                                target_width=1280)
 
     # resize cropped images to desired shape
     resize_image_content = tf.image.resize_images(
@@ -104,7 +102,7 @@ def decode_transform(input_queue, shape=IMAGE_SHAPE, standardize=True):
     return processed_image, one_hot_label_queue
 
 
-def batch_generator(image, label, batch_size=BATCH_SIZE, shuffle=True):
+def batch_generator(image, label, batch_size=None, shuffle=True):
     """turn data queue into batches"""
     if shuffle:
         return tf.train.shuffle_batch(
@@ -124,13 +122,24 @@ def batch_generator(image, label, batch_size=BATCH_SIZE, shuffle=True):
                 allow_smaller_final_batch=True)
 
 
-def data_pipe(paths_to_image, labels, num_epochs=None, shuffle=True):
+def data_pipe(paths_to_image,
+              labels,
+              num_epochs=None,
+              batch_size=None,
+              shape=None,
+              shuffle=True):
     """so one-in-all from data directory to iterated data feed in batches"""
-    resized_image_queue, label_queue = \
-        decode_transform(make_queue(
-            paths_to_image, labels, num_epochs=num_epochs, shuffle=shuffle))
-    image_batch, label_batch = \
-        batch_generator(resized_image_queue, label_queue, shuffle=shuffle)
+    resized_image_queue, label_queue = decode_transform(make_queue(
+                                        paths_to_image,
+                                        labels,
+                                        num_epochs=num_epochs,
+                                        shuffle=shuffle),
+                                        shape=shape)
+    image_batch, label_batch = batch_generator(
+                                        resized_image_queue,
+                                        label_queue,
+                                        batch_size=batch_size,
+                                        shuffle=shuffle)
     return image_batch, label_batch
 
 

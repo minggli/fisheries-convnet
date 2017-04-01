@@ -4,8 +4,8 @@ import tensorflow as tf
 
 from app.main import EVAL
 from app.models.cnn import ConvolutionalNeuralNet
-from app.settings import (IMAGE_PATH, IMAGE_SHAPE, MODEL_PATH, MAX_STEPS,
-                          ALPHA, BETA)
+from app.settings import (IMAGE_PATH, IMAGE_SHAPE, BATCH_SIZE, MODEL_PATH,
+                          MAX_STEPS, ALPHA, BETA)
 from app.pipeline import data_pipe, generate_data_skeleton
 from app.controllers import (train, save_session, predict, submit,
                              restore_session)
@@ -78,11 +78,15 @@ if not EVAL:
                                             train_file_array,
                                             train_label_array,
                                             num_epochs=None,
+                                            shape=IMAGE_SHAPE,
+                                            batch_size=BATCH_SIZE,
                                             shuffle=True)
     valid_image_batch, valid_label_batch = data_pipe(
                                             valid_file_array,
                                             valid_label_array,
                                             num_epochs=None,
+                                            shape=IMAGE_SHAPE,
+                                            batch_size=BATCH_SIZE,
                                             shuffle=True)
 
     init_op = tf.group(tf.local_variables_initializer(),
@@ -106,6 +110,8 @@ elif EVAL:
                             test_file_array,
                             _,
                             num_epochs=1,
+                            shape=IMAGE_SHAPE,
+                            batch_size=BATCH_SIZE,
                             shuffle=False)
 
     # only need to initiate data pipeline stored in local variable

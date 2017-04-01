@@ -5,44 +5,28 @@ sampling
 obtain positive and negative samples from ImageNet to train Haar Cascade.
 """
 
-import requests
-import os
 import random
 import shutil
-import numpy as np
+import requests
+import uuid
+
+from socket import timeout
+from requests.exceptions import ConnectTimeout, ConnectionError
 
 from app.controllers import timeit
-from app.settings import CV_SAMPLE_PATH
-
-np.random.seed(1)
-BASE_URL = 'http://image-net.org/api/text/imagenet.synset.geturls?wnid={0}'
-
-synset_ids_pos = {
-                    'Tuna_Bluefin': 'n02627292',
-                    'Tuna_Yellowfin': 'n02627532',
-                    'Tuna_Albacore': 'n02627037',
-                    'DOL': 'n02581957',
-                    'LAG': 'n02545841',
-                    'SHA': 'n01484285',
-                    'OTHER': 'n02512053'
-}
-synset_ids_neg = {
-                    'ocean': 'n09376198',
-                    'people': 'n07942152',
-                    'poop deck': 'n03982642'
-}
+from app.settings import CV_SAMPLE_PATH, SYNSET_ID_POS, SYNSET_ID_NEG, BASE_URL
 
 
 @timeit
-def generate_sample_skeleton(synset_dict, sample_size):
+def generate_sample_skeleton(synset_dict, sample_size, base_url=BASE_URL):
     """produces urls of images belonging to certain synset on ImageNet"""
     synset_urls = list()
     for key, wnid in synset_dict.items():
         try:
-            r = requests.get(BASE_URL.format(wnid),
+            r = requests.get(base_url.format(wnid),
                              allow_redirects=True,
                              timeout=5)
-        except requests.exceptions.ConnectionError:
+        except (ConnectTimeout, ConnectionError) as e:
             raise RuntimeError('no active Internet connection.')
         synset_urls.append(r.text.split('\r\n'))
 
@@ -63,8 +47,13 @@ def generate_sample_skeleton(synset_dict, sample_size):
 @timeit
 def batch_retrieve(func, iterable, path):
     """processing through iterable (e.g. list)"""
+
+    import os
     from multiprocessing import Pool
     from itertools import repeat
+
+    if not os.path.exists(path):
+        os.makedirs(path)
 
     with Pool(4) as p:
         p.starmap(func, zip(iterable, repeat(path)))
@@ -77,27 +66,20 @@ def retrieve_image(image_url, path):
                          allow_redirects=False,
                          timeout=5,
                          stream=True)
-    except (requests.exceptions.ConnectTimeout,
-            requests.exceptions.ConnectionError,
-            requests.exceptions.ReadTimeout,
-            requests.packages.urllib3.exceptions.ReadTimeoutError) as e:
+    except (timeout, Exception) as e:
         return None
     code = r.status_code
     print(code, image_url, flush=True)
     if code == 200:
-        fname = image_url.split('/')[-1]
-        if not os.path.exists(path):
-            os.makedirs(path)
+        fname = str(uuid.uuid4()) + '.' + \
+                image_url.split('/')[-1].split('.')[-1]
         with open(path + '/' + fname, 'wb') as f:
             r.raw.decode_content = True
             shutil.copyfileobj(r.raw, f)
 
 
-sample_pos = generate_sample_skeleton(synset_ids_pos, sample_size=1000)
-sample_neg = generate_sample_skeleton(synset_ids_neg, sample_size=5000)
-
-print(len(sample_pos))
-print(len(sample_neg))
+sample_pos = generate_sample_skeleton(SYNSET_ID_POS, sample_size=1000)
+sample_neg = generate_sample_skeleton(SYNSET_ID_NEG, sample_size=5000)
 
 batch_retrieve(func=retrieve_image,
                iterable=sample_neg,
