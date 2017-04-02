@@ -27,10 +27,9 @@ def train(n, sess, x, _y, keep_prob, train_image_batch, train_label_batch,
 
     for global_step in range(n):
         train_image, train_label = \
-            sess.run([train_image_batch, train_label_batch])
-        optimiser.run(feed_dict={x: train_image,
-                                 _y: train_label,
-                                 keep_prob: .5})
+                            sess.run([train_image_batch, train_label_batch])
+        optimiser.run(feed_dict={
+                            x: train_image, _y: train_label, keep_prob: .5})
         print(global_step, train_label[0])
 
         if global_step % 10 == 0:
@@ -41,7 +40,9 @@ def train(n, sess, x, _y, keep_prob, train_image_batch, train_label_batch,
                          _y: valid_label, keep_prob: 1.0})
             print("step {0} of {3}, valid accuracy: {1:.4f}, "
                   "log loss: {2:.4f}".format(global_step,
-                                             training_accuracy, loss_score, n))
+                                             training_accuracy,
+                                             loss_score,
+                                             n))
 
 
 @multi_threading

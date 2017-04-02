@@ -1,5 +1,9 @@
 # -*- coding: utf-8 -*-
+"""
+cnn
 
+template atop tensorflow for buliding Convolutional Neural Network
+"""
 import operator
 import functools
 import tensorflow as tf

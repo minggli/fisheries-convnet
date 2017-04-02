@@ -45,7 +45,7 @@ if CV_TRAIN:
 cascade = cv2.CascadeClassifier(HAARCASCADE + 'cascade.xml')
 
 file_array, _ = generate_data_skeleton(
-    os.path.join(os.path.realpath('.'), IMAGE_PATH) + 'cv_samples/pos_cropped')
+                os.path.join(os.path.realpath('.'), IMAGE_PATH) + 'train/LAG')
 
 img = cv2.imread(random.choice(file_array))
 gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)

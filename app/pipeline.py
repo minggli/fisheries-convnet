@@ -20,7 +20,7 @@ def folder_traverse(root_dir, ext=('.jpg')):
     if not os.path.exists(root_dir):
         raise RuntimeError('{0} doesn\'t exist.'.format(root_dir))
     file_structure = dict()
-    # using os.walk instead of new os.scandir for backward compatibility reason
+    # using os.walk instead of new os.scandir for backward compatibility
     for root, _, files in os.walk(root_dir):
         image_list = [i for i in files if i.endswith(ext)]
         if image_list:
@@ -86,15 +86,15 @@ def decode_transform(input_queue, shape=None, standardize=True):
 
     # resize cropped images to desired shape
     resize_image_content = tf.image.resize_images(
-        images=cropped_image_content,
-        size=[shape[0], shape[1]])
+                                images=cropped_image_content,
+                                size=[shape[0], shape[1]])
 
     resize_image_content.set_shape(shape)
 
     # apply standardization
     if standardize:
         std_image_content = tf.image.per_image_standardization(
-                            resize_image_content)
+                                resize_image_content)
         processed_image = std_image_content
     elif not standardize:
         processed_image = resize_image_content
@@ -106,20 +106,20 @@ def batch_generator(image, label, batch_size=None, shuffle=True):
     """turn data queue into batches"""
     if shuffle:
         return tf.train.shuffle_batch(
-                tensors=[image, label],
-                batch_size=batch_size,
-                num_threads=4,
-                capacity=1e3,
-                min_after_dequeue=200,
-                allow_smaller_final_batch=True)
+                            tensors=[image, label],
+                            batch_size=batch_size,
+                            num_threads=4,
+                            capacity=1e3,
+                            min_after_dequeue=200,
+                            allow_smaller_final_batch=True)
     elif not shuffle:
         return tf.train.batch(
-                tensors=[image, label],
-                batch_size=batch_size,
-                num_threads=1,
-                # thread number must be one to keep it unshuffled.
-                capacity=1e3,
-                allow_smaller_final_batch=True)
+                            tensors=[image, label],
+                            batch_size=batch_size,
+                            num_threads=1,
+                            # thread number must be one to keep it unshuffled.
+                            capacity=1e3,
+                            allow_smaller_final_batch=True)
 
 
 def data_pipe(paths_to_image,
@@ -130,16 +130,16 @@ def data_pipe(paths_to_image,
               shuffle=True):
     """so one-in-all from data directory to iterated data feed in batches"""
     resized_image_queue, label_queue = decode_transform(make_queue(
-                                        paths_to_image,
-                                        labels,
-                                        num_epochs=num_epochs,
-                                        shuffle=shuffle),
-                                        shape=shape)
+                                            paths_to_image,
+                                            labels,
+                                            num_epochs=num_epochs,
+                                            shuffle=shuffle),
+                                            shape=shape)
     image_batch, label_batch = batch_generator(
-                                        resized_image_queue,
-                                        label_queue,
-                                        batch_size=batch_size,
-                                        shuffle=shuffle)
+                                            resized_image_queue,
+                                            label_queue,
+                                            batch_size=batch_size,
+                                            shuffle=shuffle)
     return image_batch, label_batch
 
 
