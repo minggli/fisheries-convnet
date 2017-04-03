@@ -40,8 +40,8 @@ if FETCH:
                    path=CV_SAMPLE_PATH + 'pos')
 
 if CV_TRAIN:
-    subprocess.call(os.path.dirnames(os.path.realpath(__file__)) +
-                    '/test.sh', shell=True)
+    subprocess.call(os.path.dirname(os.path.realpath(__file__)) +
+                    '/sampletrain.sh', shell=True)
 
 if CV_DETECT:
     # load trained Haar cascade classifier
