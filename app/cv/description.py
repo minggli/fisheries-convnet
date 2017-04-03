@@ -19,7 +19,7 @@ import json
 import cv2
 
 from app.pipeline import folder_traverse
-from app.settings import CV_SAMPLE_PATH
+from app.settings import CV_SAMPLE_PATH, BOUNDINGBOX
 
 
 def deserialize_json(rootdir, ext=('json')):
@@ -38,8 +38,7 @@ def deserialize_json(rootdir, ext=('json')):
 
 
 # producing positive samples with required description format by OpenCV
-bb = deserialize_json(os.path.join(
-                 os.path.dirname(os.path.realpath(__file__)), 'bb/'))
+bb = deserialize_json(BOUNDINGBOX)
 file_structure = folder_traverse(
                  os.path.join(os.path.realpath('.'), CV_SAMPLE_PATH + 'pos/'))
 f = open(os.path.dirname(os.path.realpath(__file__)) + '/positives.dat', 'w')
@@ -68,6 +67,7 @@ file_structure = folder_traverse(
 f = open(os.path.dirname(os.path.realpath(__file__)) + '/negatives.dat', 'w')
 for folder, filelist in file_structure.items():
     for filename in filelist:
+        # use OpenCV I/O to make sure correct jpeg file
         img = cv2.imread(folder+filename, -1)
         cv2.imwrite(folder+filename, img)
         string = '{0}{1}\n'.format(folder, filename)
