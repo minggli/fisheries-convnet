@@ -52,6 +52,23 @@ def generate_data_skeleton(root_dir, valid_size=None):
         return X, y
 
 
+def deserialize_json(rootdir, ext=('json')):
+    """concatenate and deserialize bounding boxes in json format"""
+
+    import json
+    bbox_file_structure = folder_traverse(rootdir, ext=ext)
+    annotations = list()
+    for folder, filelist in bbox_file_structure.items():
+        for filename in filelist:
+            with open(folder+filename) as f:
+                label = json.load(f)
+                annotations.append(label)
+    # individual json object from nested lists
+    annotations_dict = {json_object['filename']: json_object for nested_list
+                        in annotations for json_object in nested_list}
+    return annotations_dict
+
+
 def make_queue(paths_to_image, labels, num_epochs=None, shuffle=True):
     """returns an Ops Tensor with queued image and label pair"""
     images = tf.convert_to_tensor(paths_to_image, dtype=tf.string)
@@ -77,6 +94,9 @@ def decode_transform(input_queue, shape=None, standardize=True):
 
     image_queue = tf.read_file(input_queue[0])
     original_image = tf.image.decode_jpeg(image_queue, channels=shape[2])
+
+    # apply bounding box here
+
 
     # crop larger images (e.g. 1280*974) to 1280*720, this func doesn't resize.
     cropped_image_content = tf.image.resize_image_with_crop_or_pad(
