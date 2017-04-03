@@ -16,15 +16,16 @@ http://docs.opencv.org/trunk/dc/d88/tutorial_traincascade.html
 
 import os
 import cv2
-import random
+import json
 import subprocess
 
-from app.main import FETCH, CV_TRAIN
+from app.main import FETCH, CV_TRAIN, CV_DETECT
 from app.pipeline import generate_data_skeleton
 from app.cv.fetchsamples import (generate_sample_skeleton, batch_retrieve,
                                  retrieve_image)
+from app.cv.serializer import serialize_json
 from app.settings import (HAARCASCADE, CV_SAMPLE_PATH, SYNSET_ID_POS,
-                          SYNSET_ID_NEG, BASE_URL, IMAGE_PATH)
+                          SYNSET_ID_NEG, BASE_URL, IMAGE_PATH, BOUNDINGBOX)
 
 
 if FETCH:
@@ -39,23 +40,20 @@ if FETCH:
                    path=CV_SAMPLE_PATH + 'pos')
 
 if CV_TRAIN:
-    subprocess.call('sampletrain.sh', shell=True)
+    subprocess.call(os.path.dirnames(os.path.realpath(__file__)) +
+                    '/test.sh', shell=True)
 
-# load trained Haar cascade classifier
-cascade = cv2.CascadeClassifier(HAARCASCADE + 'cascade.xml')
-
-file_array, _ = generate_data_skeleton(
-                os.path.join(os.path.realpath('.'), IMAGE_PATH) + 'train/LAG')
-
-img = cv2.imread(random.choice(file_array))
-gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-
-fish = cascade.detectMultiScale(gray)
-
-for (x, y, w, h) in fish:
-    print(x, y, w, h)
-    cv2.rectangle(img, (x, y), (x + w, y + h), (255, 0, 0), 2)
-
-cv2.imshow('img', img)
-cv2.waitKey(0)
-cv2.destroyAllWindows()
+if CV_DETECT:
+    # load trained Haar cascade classifier
+    cascade = cv2.CascadeClassifier(HAARCASCADE + 'cascade.xml')
+    file_array, _ = generate_data_skeleton(root_dir=IMAGE_PATH + 'test_stg1')
+    output = list()
+    for path_to_image in file_array:
+        original_img = cv2.imread(path_to_image, -1)
+        grayscale = cv2.cvtColor(original_img, cv2.COLOR_BGR2GRAY)
+        fish = cascade.detectMultiScale(grayscale)
+        filename = path_to_image.split('/')[-1]
+        img_json = serialize_json(filename, fish)
+        output.append(img_json)
+    with open(BOUNDINGBOX + 'test.json', 'w') as f:
+        json.dump(output, f, sort_keys=True, indent=4, ensure_ascii=False)

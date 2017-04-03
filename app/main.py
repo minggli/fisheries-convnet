@@ -2,13 +2,15 @@
 
 import sys
 
-CV_TRAIN = True if 'CV_TRAIN' in map(str.upper, sys.argv[1:]) else False
 FETCH = True if 'FETCH' in map(str.upper, sys.argv[1:]) else False
+CV_TRAIN = True if 'CV_TRAIN' in map(str.upper, sys.argv[1:]) else False
+CV_DETECT = True if 'CV_DETECT' in map(str.upper, sys.argv[1:]) else False
+TRAIN = True if 'TRAIN' in map(str.upper, sys.argv[1:]) else False
 EVAL = True if 'EVAL' in map(str.upper, sys.argv[1:]) else False
 
+
 if __name__ == '__main__':
-    if FETCH or CV_TRAIN:
+    if FETCH or CV_TRAIN or CV_DETECT:
         from .cv import cv
-    else:
-        if EVAL:
-            from .engine import vgg16
+    elif TRAIN or EVAL:
+        from .engine import vgg16
