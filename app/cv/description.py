@@ -16,13 +16,14 @@ test set.
 import os
 import cv2
 
-from app.pipeline import folder_traverse, deserialize_json
+from app.cv.serializer import deserialize_json
+from app.pipeline import folder_traverse
 from app.settings import CV_SAMPLE_PATH, BOUNDINGBOX
 
 # producing positive samples with required description format by OpenCV
 bbox = deserialize_json(BOUNDINGBOX)
-file_structure = folder_traverse(
-                 os.path.join(os.path.realpath('.'), CV_SAMPLE_PATH + 'pos/'))
+file_structure = folder_traverse(os.path.join(os.path.realpath('.'),
+                                 CV_SAMPLE_PATH + 'pos/'))
 f = open(os.path.dirname(os.path.realpath(__file__)) + '/positives.dat', 'w')
 for folder, filelist in file_structure.items():
     for filename in filelist:
