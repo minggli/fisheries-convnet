@@ -19,12 +19,16 @@ def serialize_json(filename, detector):
                       "x": int(x),
                       "y": int(y)}
         annotations.append(annotation)
-    rv = {
-        "annotations": annotations,
-        "class": "image",
-        "filename": str(filename)
-    }
-    return rv
+
+    if annotations:
+        rv = {
+            "annotations": annotations,
+            "class": "image",
+            "filename": str(filename)
+        }
+        return rv
+    elif not annotations:
+        return None
 
 
 def deserialize_json(root_dir, ext=('json')):

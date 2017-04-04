@@ -46,16 +46,25 @@ if CV_TRAIN:
 if CV_DETECT:
     # load trained Haar cascade classifier
     cascade = cv2.CascadeClassifier(HAARCASCADE + 'cascade.xml')
-    file_array, _ = generate_data_skeleton(root_dir=IMAGE_PATH + 'test_stg1')
+    file_array = generate_data_skeleton(root_dir=IMAGE_PATH + 'test_stg1')[0]
     output = list()
+    c = 0
     for path_to_image in file_array:
         original_img = cv2.imread(path_to_image, -1)
         grayscale = cv2.cvtColor(original_img, cv2.COLOR_BGR2GRAY)
-        fish = cascade.detectMultiScale(grayscale)
+        fish = cascade.detectMultiScale(grayscale,
+                                        minNeighbors=10,
+                                        minSize=(50, 50)
+                                        )
         filename = os.path.split(path_to_image)[1]
         img_json = serialize_json(filename, fish)
         output.append(img_json)
+        c += 1
+        try:
+            n = len(img_json['annotations'])
+        except TypeError:
+            n = 0
         print('{2} object(s) detected in {0}, {1} processed.'.format(
-            filename, len(output), len(img_json['annotations'])))
+            filename, c, n))
     with open(BOUNDINGBOX + 'test.json', 'w') as f:
         json.dump(output, f, sort_keys=True, indent=4, ensure_ascii=False)

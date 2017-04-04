@@ -25,7 +25,7 @@ class Localizer(object):
         try:
             self.bboxes = \
                 deserialize_json(BOUNDINGBOX)[self.fname]['annotations']
-        except IndexError:
+        except KeyError:
             self.bboxes = None
 
         self.output_image = None
@@ -65,7 +65,7 @@ def localize(path_to_image):
     Localizer(path_to_image).declutter().write()
 
 
-paths_to_images = generate_data_skeleton(IMAGE_PATH)[0]
+paths_to_images = generate_data_skeleton(IMAGE_PATH + 'test_stg1')[0]
 
-with mp.Pool(10) as p:
+with mp.Pool(4) as p:
     p.map(localize, paths_to_images)
