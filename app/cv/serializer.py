@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
-
 """
+serializer
+
 serialize bounding boxes from Haar Cascade into json format files
 """
 import json

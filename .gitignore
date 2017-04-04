@@ -4,6 +4,7 @@
 *.csv
 *.jpg
 *.dat
+*.zip
 env
 env*
 dist

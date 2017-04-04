@@ -52,7 +52,7 @@ if CV_DETECT:
         original_img = cv2.imread(path_to_image, -1)
         grayscale = cv2.cvtColor(original_img, cv2.COLOR_BGR2GRAY)
         fish = cascade.detectMultiScale(grayscale)
-        filename = path_to_image.split('/')[-1]
+        filename = os.path.split(path_to_image)[1]
         img_json = serialize_json(filename, fish)
         output.append(img_json)
     with open(BOUNDINGBOX + 'test.json', 'w') as f:

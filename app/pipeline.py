@@ -31,7 +31,7 @@ def folder_traverse(root_dir, ext=('.jpg')):
 def generate_data_skeleton(root_dir, valid_size=None):
     """turn file structure into human-readable pandas dataframe"""
     file_structure = folder_traverse(root_dir)
-    reversed_fs = {k + '/' + f: k.split('/')[-1]
+    reversed_fs = {k + '/' + f: os.path.split(k)[1]
                    for k, v in file_structure.items() for f in v}
     df = pd.DataFrame.from_dict(data=reversed_fs, orient='index').reset_index()
     df.rename(columns={'index': 'filename', 0: 'species'}, inplace=True)
@@ -57,16 +57,15 @@ def make_queue(paths_to_image, labels, num_epochs=None, shuffle=True):
     images = tf.convert_to_tensor(paths_to_image, dtype=tf.string)
     labels = tf.convert_to_tensor(labels, dtype=tf.uint8)
     input_queue = tf.train.slice_input_producer(
-        tensor_list=[images, labels],
-        num_epochs=num_epochs,
-        shuffle=shuffle)
+                                tensor_list=[images, labels],
+                                num_epochs=num_epochs,
+                                shuffle=shuffle)
     return input_queue
 
 
-def decode_transform(input_queue, shape=None, bbox=True, standardize=True):
+def decode_transform(input_queue, shape=None, standardize=True):
     """a single decode and transform function that applies standardization with
-    mean centralisation.
-    """
+    mean centralisation."""
     # input_queue allows slicing with 0: path_to_image, 1: encoded label
     label_queue = input_queue[1]
     one_hot_label_queue = tf.one_hot(
@@ -77,13 +76,6 @@ def decode_transform(input_queue, shape=None, bbox=True, standardize=True):
 
     image_queue = tf.read_file(input_queue[0])
     original_image = tf.image.decode_jpeg(image_queue, channels=shape[2])
-
-    # Generate a single distorted bounding box
-    if bbox:
-        pass
-        # data = deserialize_json(root_dir=BOUNDINGBOX)[input_queue[0]]
-        # begin, size, _ = tf.image.sample_distorted_bounding_box(
-        #     tf.shape(original_image), bounding_boxes=bounding_boxes)
 
     # crop larger images (e.g. 1280*974) to 1280*720, this func doesn't resize.
     cropped_image_content = tf.image.resize_image_with_crop_or_pad(
@@ -113,20 +105,20 @@ def batch_generator(image, label, batch_size=None, shuffle=True):
     """turn data queue into batches"""
     if shuffle:
         return tf.train.shuffle_batch(
-                            tensors=[image, label],
-                            batch_size=batch_size,
-                            num_threads=4,
-                            capacity=1e3,
-                            min_after_dequeue=200,
-                            allow_smaller_final_batch=True)
+                                tensors=[image, label],
+                                batch_size=batch_size,
+                                num_threads=4,
+                                capacity=1e3,
+                                min_after_dequeue=200,
+                                allow_smaller_final_batch=True)
     elif not shuffle:
         return tf.train.batch(
-                            tensors=[image, label],
-                            batch_size=batch_size,
-                            num_threads=1,
-                            # thread number must be one to keep it unshuffled.
-                            capacity=1e3,
-                            allow_smaller_final_batch=True)
+                                tensors=[image, label],
+                                batch_size=batch_size,
+                                num_threads=1,
+                                # thread number must be one to be unshuffled.
+                                capacity=1e3,
+                                allow_smaller_final_batch=True)
 
 
 def data_pipe(paths_to_image,
@@ -137,16 +129,16 @@ def data_pipe(paths_to_image,
               shuffle=True):
     """so one-in-all from data directory to iterated data feed in batches"""
     resized_image_queue, label_queue = decode_transform(make_queue(
-                                            paths_to_image,
-                                            labels,
-                                            num_epochs=num_epochs,
-                                            shuffle=shuffle),
-                                            shape=shape)
+                                paths_to_image,
+                                labels,
+                                num_epochs=num_epochs,
+                                shuffle=shuffle),
+                                shape=shape)
     image_batch, label_batch = batch_generator(
-                                            resized_image_queue,
-                                            label_queue,
-                                            batch_size=batch_size,
-                                            shuffle=shuffle)
+                                resized_image_queue,
+                                label_queue,
+                                batch_size=batch_size,
+                                shuffle=shuffle)
     return image_batch, label_batch
 
 

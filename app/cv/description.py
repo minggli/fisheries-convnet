@@ -7,10 +7,10 @@ this script will take assumption that from (0, 0) to (width, height), there is
 the entirety of the single object.
 
 Thanks to https://www.kaggle.com/shuaiwang, there are bounding boxes manually
-annotated by shuai for each of image in training set, which is allowed.
-Using these bounding boxes to generate description file for OpenCV to learn to
-detect in test set. It is against the competition rule to manually annotate
-test set.
+annotated by shuai for each of image in training set. It is against rule to
+annotate test set but it is allowed for training set annotation. Using these
+bounding boxes to generate description file for OpenCV to train and generalize
+in test set.
 """
 
 import os
