@@ -7,23 +7,31 @@ localize bounding boxes and pad rest of image with zeros (255, 255, 255)
 import os
 import cv2
 import numpy as np
+import multiprocessing as mp
 
+from app.pipeline import generate_data_skeleton
 from app.cv.serializer import deserialize_json
-from app.settings import CV_SAMPLE_PATH, BOUNDINGBOX
-
-test_image = CV_SAMPLE_PATH + 'pos/img_00003.jpg'
+from app.settings import BOUNDINGBOX, IMAGE_PATH
 
 
 class Localizer(object):
 
     def __init__(self, path_to_image):
+        # cv2 loads image in BGR channel order
+        self.path = path_to_image
         self.image = cv2.imread(path_to_image, -1)
         self.fname = os.path.split(path_to_image)[1]
-        self.bboxes = \
-            deserialize_json(BOUNDINGBOX)[self.fname]['annotations']
+
+        try:
+            self.bboxes = \
+                deserialize_json(BOUNDINGBOX)[self.fname]['annotations']
+        except IndexError:
+            self.bboxes = None
+
+        self.output_image = None
 
     @property
-    def factory(self):
+    def coordinates_factory(self):
         """yield bounding boxes"""
         for bbox in self.bboxes:
             x = int(bbox['x'])
@@ -32,25 +40,32 @@ class Localizer(object):
             width = int(bbox['width'])
             yield x, x + width, y, y + height
 
-    def new_image(self):
-        background = np.zeros(shape=self.image.shape)
+    def declutter(self):
+        filter_layer = np.zeros(shape=self.image.shape)
         # highlight image with (1, 1, 1) on background of zeros
-        for x, x_end, y, y_end in self.factory:
-            background[x: x_end, y: y_end] = [1, 1, 1]
-
-        # mirrir original image's bounding boxes into new
-        self.output_image = np.mutiply(self.image, background)
+        if self.bboxes:
+            for x, x_end, y, y_end in self.coordinates_factory:
+                filter_layer[y: y_end, x: x_end, :] = (1., 1., 1.)
+            # elementwise multiplication of filter layer and original image
+            self.output_image = cv2.convertScaleAbs(self.image * filter_layer)
+        elif not self.bboxes:
+            self.output_image = self.image
+        return self
 
     def show(self):
-        cv2.imshow("Display window", self.output_image)
+        cv2.imshow("output", self.output_image)
         cv2.waitKey(0)
 
+    def write(self):
+        print('writing {}'.format(self.path))
+        cv2.imwrite(self.path, self.output_image)
 
-# # image read as it is in as BGR
-# image = cv2.imread(test_image, -1)
-# b = image[2: 10, 3: 11, :]
-# print(b)
-# c = np.zeros(shape=(8, 8, 3))
-# c[3, 3] = (1, 1, 1)
-# d = np.multiply(b, c)
-# print(d)
+
+def localize(path_to_image):
+    Localizer(path_to_image).declutter().write()
+
+
+paths_to_images = generate_data_skeleton(IMAGE_PATH)[0]
+
+with mp.Pool(10) as p:
+    p.map(localize, paths_to_images)
