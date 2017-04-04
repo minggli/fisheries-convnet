@@ -2,7 +2,7 @@
 
 # Convolutional Neural Network
 MODEL_PATH = './trained_models/'
-IMAGE_PATH = './data/'
+IMAGE_PATH = './data/localized_images/'
 IMAGE_SHAPE = (90, 160, 3)
 # IMAGE_SHAPE = (720, 1280, 3)
 BATCH_SIZE = 64

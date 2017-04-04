@@ -55,5 +55,7 @@ if CV_DETECT:
         filename = os.path.split(path_to_image)[1]
         img_json = serialize_json(filename, fish)
         output.append(img_json)
+        print('{2} object(s) detected in {0}, {1} processed.'.format(
+            filename, len(output), len(img_json['annotations'])))
     with open(BOUNDINGBOX + 'test.json', 'w') as f:
         json.dump(output, f, sort_keys=True, indent=4, ensure_ascii=False)

@@ -24,7 +24,7 @@ def serialize_json(filename, detector):
         "class": "image",
         "filename": str(filename)
     }
-    return json.dumps(rv)
+    return rv
 
 
 def deserialize_json(root_dir, ext=('json')):
