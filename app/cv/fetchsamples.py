@@ -16,7 +16,7 @@ from itertools import repeat
 from socket import timeout
 from requests.exceptions import ConnectTimeout, ConnectionError
 
-from app.controllers import timeit
+from ..controllers import timeit
 
 
 @timeit

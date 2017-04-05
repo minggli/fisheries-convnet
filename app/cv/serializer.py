@@ -6,7 +6,7 @@ serialize bounding boxes from Haar Cascade into json format files
 """
 import json
 
-from app.pipeline import folder_traverse
+from ..pipeline import folder_traverse
 
 
 def serialize_json(filename, detector):

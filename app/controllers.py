@@ -3,7 +3,7 @@ import os
 import time
 import tensorflow as tf
 
-from app.pipeline import multi_threading
+from .pipeline import multi_threading
 
 
 def timeit(func):

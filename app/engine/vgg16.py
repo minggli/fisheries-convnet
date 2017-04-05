@@ -2,13 +2,13 @@
 
 import tensorflow as tf
 
-from app.main import EVAL
-from app.models.cnn import ConvolutionalNeuralNet
-from app.settings import (IMAGE_PATH, IMAGE_SHAPE, BATCH_SIZE, MODEL_PATH,
-                          MAX_STEPS, ALPHA, BETA)
-from app.pipeline import data_pipe, generate_data_skeleton
-from app.controllers import (train, save_session, predict, submit,
-                             restore_session)
+from ..main import EVAL
+from ..models.cnn import ConvolutionalNeuralNet
+from ..settings import (IMAGE_PATH, IMAGE_SHAPE, BATCH_SIZE, MODEL_PATH,
+                        MAX_STEPS, ALPHA, BETA)
+from ..pipeline import data_pipe, generate_data_skeleton
+from ..controllers import (train, save_session, predict, submit,
+                           restore_session)
 
 sess = tf.Session()
 cnn = ConvolutionalNeuralNet(shape=IMAGE_SHAPE)

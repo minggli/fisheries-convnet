@@ -3,9 +3,9 @@
 import tensorflow as tf
 from PIL import Image
 
-from app.pipeline import generate_data_skeleton, data_pipe
-from app.settings import IMAGE_PATH
-from app.controllers import multi_threading
+from .pipeline import generate_data_skeleton, data_pipe
+from .settings import IMAGE_PATH
+from .controllers import multi_threading
 
 
 
