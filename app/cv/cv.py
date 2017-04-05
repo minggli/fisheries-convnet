@@ -19,13 +19,14 @@ import cv2
 import json
 import subprocess
 
-from app.main import FETCH, CV_TRAIN, CV_DETECT
-from app.pipeline import generate_data_skeleton
-from app.cv.fetchsamples import (generate_sample_skeleton, batch_retrieve,
-                                 retrieve_image)
-from app.cv.serializer import serialize_json
-from app.settings import (HAARCASCADE, CV_SAMPLE_PATH, SYNSET_ID_POS,
-                          SYNSET_ID_NEG, BASE_URL, IMAGE_PATH, BOUNDINGBOX)
+from .serializer import serialize_json
+from .fetchsamples import (generate_sample_skeleton, batch_retrieve,
+                           retrieve_image)
+
+from ..main import FETCH, CV_TRAIN, CV_DETECT
+from ..pipeline import generate_data_skeleton
+from ..settings import (HAARCASCADE, CV_SAMPLE_PATH, SYNSET_ID_POS,
+                        SYNSET_ID_NEG, BASE_URL, IMAGE_PATH, BOUNDINGBOX)
 
 
 if FETCH:
@@ -55,20 +56,20 @@ if CV_DETECT:
         original_img = cv2.imread(path_to_image, -1)
         grayscale = cv2.cvtColor(original_img, cv2.COLOR_BGR2GRAY)
         fish = cascade.detectMultiScale(grayscale,
-                                        minNeighbors=10,
-                                        minSize=(50, 50)
+                                        minNeighbors=3,
+                                        minSize=(100, 100)
                                         )
         filename = os.path.split(path_to_image)[1]
         img_json = serialize_json(filename, fish)
         if img_json:
             output.append(img_json)
-            n = len(img_json['annotations']) or 0
+            n = len(img_json['annotations'])
         elif not img_json:
             n = 0
         count += 1
-        print('{2} object(s) detected in {0}, {1} processed.'.format(
+        print('{2} object(s) detected in test set: {0}, {1} processed.'.format(
             filename, count, n))
     with open(BOUNDINGBOX + 'test.json', 'w') as f:
         json.dump(output, f, sort_keys=True, indent=4, ensure_ascii=False)
 
-    from .engine import detectobject
+    from ..engine import detectobject

@@ -8,8 +8,8 @@ import os
 import cv2
 import numpy as np
 
-from app.cv.serializer import deserialize_json
-from app.settings import BOUNDINGBOX
+from .cv.serializer import deserialize_json
+from .settings import BOUNDINGBOX
 
 
 class Localizer(object):
@@ -22,7 +22,7 @@ class Localizer(object):
         self.bboxes = None
         self.output_image = None
 
-        self._set_bboxes
+        self._set_bboxes()
 
     def _set_bboxes(self):
         try:

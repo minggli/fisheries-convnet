@@ -1,6 +1,6 @@
 import os
 
-from app.settings import HAARCASCADE, CV_SAMPLE_PATH
+from ..settings import HAARCASCADE, CV_SAMPLE_PATH
 
 make = [HAARCASCADE, CV_SAMPLE_PATH + 'neg', CV_SAMPLE_PATH + 'pos']
 
