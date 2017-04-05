@@ -70,3 +70,5 @@ if CV_DETECT:
             filename, count, n))
     with open(BOUNDINGBOX + 'test.json', 'w') as f:
         json.dump(output, f, sort_keys=True, indent=4, ensure_ascii=False)
+
+    from .engine import detectobject
