@@ -41,6 +41,7 @@ if FETCH:
                    path=CV_SAMPLE_PATH + 'pos')
 
 if CV_TRAIN:
+    from . import description
     subprocess.call(os.path.dirname(os.path.realpath(__file__)) +
                     '/sampletrain.sh',
                     env=os.path.dirname(os.path.realpath(__file__)),
