@@ -9,5 +9,4 @@ from ..localizer import Localizer
 
 with mp.Pool(4) as p:
     p.map(Localizer.localize,
-          generate_data_skeleton(IMAGE_PATH)[0]
-          )
+          generate_data_skeleton(IMAGE_PATH)[0])
