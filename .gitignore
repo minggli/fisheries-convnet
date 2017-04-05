@@ -5,6 +5,8 @@
 *.jpg
 *.dat
 *.zip
+*.vec
+test.json
 env
 env*
 dist
