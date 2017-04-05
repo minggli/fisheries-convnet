@@ -41,14 +41,16 @@ if FETCH:
 
 if CV_TRAIN:
     subprocess.call(os.path.dirname(os.path.realpath(__file__)) +
-                    '/sampletrain.sh', shell=True)
+                    '/sampletrain.sh',
+                    env=os.path.dirname(os.path.realpath(__file__)),
+                    shell=True)
 
 if CV_DETECT:
     # load trained Haar cascade classifier
     cascade = cv2.CascadeClassifier(HAARCASCADE + 'cascade.xml')
     file_array = generate_data_skeleton(root_dir=IMAGE_PATH + 'test_stg1')[0]
     output = list()
-    c = 0
+    count = 0
     for path_to_image in file_array:
         original_img = cv2.imread(path_to_image, -1)
         grayscale = cv2.cvtColor(original_img, cv2.COLOR_BGR2GRAY)
@@ -58,13 +60,13 @@ if CV_DETECT:
                                         )
         filename = os.path.split(path_to_image)[1]
         img_json = serialize_json(filename, fish)
-        output.append(img_json)
-        c += 1
-        try:
-            n = len(img_json['annotations'])
-        except TypeError:
+        if img_json:
+            output.append(img_json)
+            n = len(img_json['annotations']) or 0
+        elif not img_json:
             n = 0
+        count += 1
         print('{2} object(s) detected in {0}, {1} processed.'.format(
-            filename, c, n))
+            filename, count, n))
     with open(BOUNDINGBOX + 'test.json', 'w') as f:
         json.dump(output, f, sort_keys=True, indent=4, ensure_ascii=False)
