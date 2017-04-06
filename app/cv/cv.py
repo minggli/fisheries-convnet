@@ -56,7 +56,8 @@ if CV_DETECT:
         grayscale = cv2.cvtColor(original_img, cv2.COLOR_BGR2GRAY)
         fish = cascade.detectMultiScale(grayscale,
                                         minNeighbors=3,
-                                        minSize=(100, 100)
+                                        minSize=(50, 50),
+                                        maxSize=(500, 500)
                                         )
         filename = os.path.split(path_to_image)[1]
         img_json = serialize_json(filename, fish)
