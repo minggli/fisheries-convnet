@@ -80,7 +80,7 @@ def submit(complete_probs, path):
                 data=complete_probs,
                 columns=template.columns,
                 index=template.index,
-                dtype=float).applymap(lambda x: float('{0:.6f}'.format(x)))
+                dtype=float).applymap(lambda x: round(x, 6))
     df.to_csv(
                 path + 'submission_{0}.csv'.format(now),
                 encoding='utf8',
