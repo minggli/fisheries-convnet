@@ -50,6 +50,7 @@ file_structure = folder_traverse(os.path.join(os.path.realpath('.'),
                                  CV_SAMPLE_PATH + 'neg/'))
 f = open(os.path.dirname(os.path.realpath(__file__)) + '/negatives.dat', 'w')
 for folder, filelist in file_structure.items():
+    print(folder)
     for filename in filelist:
         # use OpenCV I/O to make sure correct jpeg file
         img = cv2.imread(folder+filename, -1)
