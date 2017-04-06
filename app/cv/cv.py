@@ -25,7 +25,7 @@ from .fetchsamples import (generate_sample_skeleton, batch_retrieve,
 
 from ..main import FETCH, CV_TRAIN, CV_DETECT
 from ..pipeline import generate_data_skeleton
-from ..settings import (HAARCASCADE, SYNSET_ID_POS, CV_IM_SAMPLE_PATH
+from ..settings import (HAARCASCADE, SYNSET_ID_POS, CV_IM_SAMPLE_PATH,
                         SYNSET_ID_NEG, BASE_URL, IMAGE_PATH, BOUNDINGBOX)
 
 
