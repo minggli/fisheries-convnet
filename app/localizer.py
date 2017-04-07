@@ -12,7 +12,7 @@ from .cv.serializer import deserialize_json
 from .settings import BOUNDINGBOX
 
 
-class Localizer(object):
+class Localizer:
 
     def __init__(self, path_to_image):
         # cv2 loads image in BGR channel order

@@ -9,7 +9,7 @@ import functools
 import tensorflow as tf
 
 
-class ConvolutionalNeuralNet(object):
+class ConvolutionalNeuralNet:
 
     def __init__(self, shape):
         """shape: [n_samples, channels, n_features]"""
