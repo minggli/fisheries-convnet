@@ -1,4 +1,9 @@
 # -*- coding: utf-8 -*-
+"""
+controllers
+
+handle tensorflow session relating to ConvNet
+"""
 import os
 import time
 import tensorflow as tf

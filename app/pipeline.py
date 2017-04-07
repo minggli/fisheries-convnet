@@ -5,8 +5,6 @@ pipeline
 data pipeline from image root folder to processed tensors of train test batches
 for images and labels
 """
-
-
 import os
 import collections
 import numpy as np
