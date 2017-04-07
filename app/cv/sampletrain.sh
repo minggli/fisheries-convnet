@@ -3,7 +3,6 @@
 
 
 export SCRIPT_DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
-# export $cv=DIR&&'/app/cv/'
 
 cd $SCRIPT_DIR
 opencv_createsamples -info positives.dat -vec pos.vec -w 40 -h 40 -num 3300

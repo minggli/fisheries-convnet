@@ -8,6 +8,7 @@ for images and labels
 
 
 import os
+import collections
 import numpy as np
 import pandas as pd
 import tensorflow as tf
@@ -16,15 +17,17 @@ from sklearn import model_selection
 
 
 def folder_traverse(root_dir, ext=('.jpg')):
-    """map all image-only files in a folder"""
+    """map all image files recusively from root directory"""
+
     if not os.path.exists(root_dir):
         raise RuntimeError('{0} doesn\'t exist.'.format(root_dir))
-    file_structure = dict()
-    # using os.walk instead of new os.scandir for backward compatibility
-    for root, _, files in os.walk(root_dir):
-        image_list = [i for i in files if i.endswith(ext)]
-        if image_list:
-            file_structure[root] = image_list
+
+    file_structure = collections.defaultdict(list)
+    for item in os.scandir(root_dir):
+        if item.is_dir():
+            file_structure.update(folder_traverse(item.path, ext))
+        elif item.is_file() and item.name.endswith(ext):
+            file_structure[os.path.dirname(item.path)].append(item.name)
     return file_structure
 
 
