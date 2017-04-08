@@ -48,9 +48,8 @@ cross_entropy = \
 loss = tf.reduce_mean(cross_entropy)
 
 # applying label weights to loss function
-class_weight = tf.constant([[0.544876886, 0.947047922, 0.969023034,
-                             0.982261054, 0.876886418, 0.920836643,
-                             0.953402171, 0.805665872]])
+class_weight = tf.constant([[0.545, 0.947, 0.969, 0.982, 0.877, 0.921,
+                             0.953, 0.806]])
 weight_per_label = tf.transpose(tf.matmul(_y, tf.transpose(class_weight)))
 loss = tf.reduce_mean(tf.multiply(weight_per_label, cross_entropy))
 
