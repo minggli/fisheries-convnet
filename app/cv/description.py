@@ -28,7 +28,7 @@ f = open(os.path.dirname(os.path.realpath(__file__)) + '/positives.dat', 'w')
 for folder, filelist in file_structure.items():
     for filename in filelist:
         data = bbox[filename]['annotations']
-        path_to_image = '{0}{1} '.format(folder, filename)
+        path_to_image = '{0}{1} '.format(folder + '/', filename)
         num_object = '{0}'.format(len(data))
         boundingbox_template = ' {0} {1} {2} {3}'
         bboxes = ''
@@ -49,11 +49,10 @@ file_structure = folder_traverse(os.path.join(os.path.realpath('.'),
                                  CV_SAMPLE_PATH + 'neg/'))
 f = open(os.path.dirname(os.path.realpath(__file__)) + '/negatives.dat', 'w')
 for folder, filelist in file_structure.items():
-    print(folder)
     for filename in filelist:
         # use OpenCV I/O to make sure correct jpeg file
-        img = cv2.imread(folder+filename, -1)
-        cv2.imwrite(folder+filename, img)
+        img = cv2.imread(folder + '/' + filename, -1)
+        cv2.imwrite(folder + '/' + filename, img)
         string = '{0}{1}\n'.format(folder, filename)
         f.write(string)
 f.close()

@@ -53,7 +53,7 @@ if CV_DETECT:
     # apply trained Haar Cascade classifier on test set.
 
     cascade = cv2.CascadeClassifier(HAARCASCADE + 'cascade.xml')
-    file_array = generate_data_skeleton(IMAGE_PATH + 'test_stg1')[0]
+    file_array = generate_data_skeleton(IMAGE_PATH)[0]
 
     def detectobject(path_to_image, params, haarcascadeclf):
         original_img = cv2.imread(path_to_image, -1)
