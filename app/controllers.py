@@ -7,8 +7,11 @@ handle tensorflow session relating to ConvNet
 import os
 import time
 import tensorflow as tf
+import pandas as pd
 
-from .pipeline import multi_threading
+from datetime import datetime
+
+from .pipeline import multithreading
 
 
 def timeit(func):
@@ -24,7 +27,7 @@ def timeit(func):
     return wrapper
 
 
-@multi_threading
+@multithreading
 @timeit
 def train(n, sess, x, _y, keep_prob, train_image_batch, train_label_batch,
           valid_image_batch, valid_label_batch, optimiser, metric, loss):
@@ -50,7 +53,7 @@ def train(n, sess, x, _y, keep_prob, train_image_batch, train_label_batch,
                                              n))
 
 
-@multi_threading
+@multithreading
 @timeit
 def predict(sess, x, keep_prob, logits, test_image_batch):
     """predict test set using graph previously trained and saved."""
@@ -72,10 +75,6 @@ def predict(sess, x, keep_prob, logits, test_image_batch):
 @timeit
 def submit(complete_probs, path):
     """"produce an output file with predicted probabilities."""
-
-    import pandas as pd
-    from datetime import datetime
-
     now = datetime.now().strftime('%Y-%m-%d_%H:%M:%S')
     template = pd.read_csv(
                 filepath_or_buffer=path + 'sample_submission_stg1.csv',
@@ -105,8 +104,6 @@ def restore_session(sess, path):
 @timeit
 def save_session(sess, path, sav):
     """save hard trained model for future predicting."""
-    from datetime import datetime
-
     now = datetime.now().strftime('%Y-%m-%d_%H:%M:%S')
     if not os.path.exists(path):
         os.makedirs(path)

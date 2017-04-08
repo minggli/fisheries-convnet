@@ -143,7 +143,7 @@ def data_pipe(paths_to_image,
     return image_batch, label_batch
 
 
-def multi_threading(func):
+def multithreading(func):
     """decorator using tensorflow threading ability."""
     def wrapper(*args, **kwargs):
         coord = tf.train.Coordinator()
