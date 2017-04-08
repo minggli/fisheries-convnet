@@ -18,9 +18,9 @@ import os
 import cv2
 import json
 import subprocess
-import multiprocessing as mp
 
 from itertools import repeat
+from multiprocessing import Pool
 from .fetchsamples import (generate_sample_skeleton, batch_retrieve,
                            retrieve_image)
 
@@ -67,16 +67,15 @@ if CV_DETECT:
         img_json = serialize_json(filename, fish_detector)
         return img_json
 
-    with mp.Pool(4) as p:
+    with Pool(4) as p:
         output = p.starmap(detectobject,
                            [file_array, repeat(HAARPARAMS), repeat(cascade)])
 
-    with open(BOUNDINGBOX + 'test.json', 'w') as f:
-        json.dump(filter(None, output),
-                  f,
-                  sort_keys=True,
-                  indent=4,
-                  ensure_ascii=False)
+        with open(BOUNDINGBOX + 'test.json', 'w') as f:
+            json.dump(filter(None, output),
+                      f,
+                      sort_keys=True,
+                      indent=4,
+                      ensure_ascii=False)
 
-    with mp.Pool(4) as p:
         p.map(Localizer.localize, file_array)
