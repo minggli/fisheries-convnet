@@ -19,7 +19,6 @@ import cv2
 import json
 import subprocess
 
-from itertools import repeat
 from multiprocessing import Pool
 from .fetchsamples import (generate_sample_skeleton, batch_retrieve,
                            retrieve_image)
@@ -55,7 +54,7 @@ if CV_DETECT:
     cascade = cv2.CascadeClassifier(HAARCASCADE + 'cascade.xml')
     file_array = generate_data_skeleton(IMAGE_PATH)[0]
 
-    def detectobject(path_to_image, params, haarcascadeclf):
+    def detectobject(path_to_image, params=HAARPARAMS, haarcascadeclf=cascade):
         original_img = cv2.imread(path_to_image, -1)
         grayscale = cv2.cvtColor(original_img, cv2.COLOR_BGR2GRAY)
         fish_detector = haarcascadeclf.detectMultiScale(
@@ -65,17 +64,19 @@ if CV_DETECT:
                                         maxSize=params['maxSize'])
         filename = os.path.split(path_to_image)[1]
         img_json = serialize_json(filename, fish_detector)
+        print('processed {}'.format(path_to_image))
         return img_json
 
+    output = list()
+    for path_to_image in file_array:
+        output.append(detectobject(path_to_image))
+
+    with open(BOUNDINGBOX + 'test.json', 'w') as f:
+        json.dump(list(filter(None, output)),
+                  f,
+                  sort_keys=True,
+                  indent=4,
+                  ensure_ascii=False)
+
     with Pool(4) as p:
-        output = p.starmap(detectobject,
-                           [file_array, repeat(HAARPARAMS), repeat(cascade)])
-
-        with open(BOUNDINGBOX + 'test.json', 'w') as f:
-            json.dump(filter(None, output),
-                      f,
-                      sort_keys=True,
-                      indent=4,
-                      ensure_ascii=False)
-
         p.map(Localizer.localize, file_array)
