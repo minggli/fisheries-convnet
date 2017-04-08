@@ -30,3 +30,9 @@ SYNSET_ID_NEG = {
                     'people': 'n07942152',
                     'poop deck': 'n03982642'
 }
+
+HAARPARAMS = dict(
+    minNeighbors=3,
+    minSize=(50, 50),
+    maxSize=(500, 500)
+)

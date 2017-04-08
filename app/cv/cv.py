@@ -18,15 +18,19 @@ import os
 import cv2
 import json
 import subprocess
+import multiprocessing as mp
 
-from .serializer import serialize_json
+from itertools import repeat
 from .fetchsamples import (generate_sample_skeleton, batch_retrieve,
                            retrieve_image)
 
 from ..main import FETCH, CV_TRAIN, CV_DETECT
+from ..localizer import Localizer
 from ..pipeline import generate_data_skeleton
+from ..serializer import serialize_json
 from ..settings import (HAARCASCADE, SYNSET_ID_POS, CV_IM_SAMPLE_PATH,
-                        SYNSET_ID_NEG, BASE_URL, IMAGE_PATH, BOUNDINGBOX)
+                        SYNSET_ID_NEG, BASE_URL, IMAGE_PATH, BOUNDINGBOX,
+                        HAARPARAMS)
 
 
 if FETCH:
@@ -46,30 +50,33 @@ if CV_TRAIN:
                     '/sampletrain.sh')
 
 if CV_DETECT:
-    # load trained Haar cascade classifier
+    # apply trained Haar Cascade classifier on test set.
+
     cascade = cv2.CascadeClassifier(HAARCASCADE + 'cascade.xml')
-    file_array = generate_data_skeleton(root_dir=IMAGE_PATH + 'test_stg1')[0]
-    output = list()
-    count = 0
-    for path_to_image in file_array:
+    file_array = generate_data_skeleton(IMAGE_PATH + 'test_stg1')[0]
+
+    def detectobject(path_to_image, params, haarcascadeclf):
         original_img = cv2.imread(path_to_image, -1)
         grayscale = cv2.cvtColor(original_img, cv2.COLOR_BGR2GRAY)
-        fish = cascade.detectMultiScale(grayscale,
-                                        minNeighbors=3,
-                                        minSize=(50, 50),
-                                        maxSize=(500, 500)
-                                        )
+        fish_detector = haarcascadeclf.detectMultiScale(
+                                        grayscale,
+                                        minNeighbors=params['minNeighbors'],
+                                        minSize=params['minSize'],
+                                        maxSize=params['maxSize'])
         filename = os.path.split(path_to_image)[1]
-        img_json = serialize_json(filename, fish)
-        if img_json:
-            output.append(img_json)
-            n = len(img_json['annotations'])
-        elif not img_json:
-            n = 0
-        count += 1
-        print('{2} object(s) detected in test set: {0}, {1} processed.'.format(
-            filename, count, n))
-    with open(BOUNDINGBOX + 'test.json', 'w') as f:
-        json.dump(output, f, sort_keys=True, indent=4, ensure_ascii=False)
+        img_json = serialize_json(filename, fish_detector)
+        return img_json
 
-    from ..engine import detectobject
+    with mp.Pool(4) as p:
+        output = p.starmap(detectobject,
+                           [file_array, repeat(HAARPARAMS), repeat(cascade)])
+
+    with open(BOUNDINGBOX + 'test.json', 'w') as f:
+        json.dump(filter(None, output),
+                  f,
+                  sort_keys=True,
+                  indent=4,
+                  ensure_ascii=False)
+
+    with mp.Pool(4) as p:
+        p.map(Localizer.localize, file_array)

@@ -16,8 +16,7 @@ in test set.
 import os
 import cv2
 
-from .serializer import deserialize_json
-
+from ..serializer import deserialize_json
 from ..pipeline import folder_traverse
 from ..settings import CV_SAMPLE_PATH, BOUNDINGBOX
 

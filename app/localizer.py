@@ -8,7 +8,7 @@ import os
 import cv2
 import numpy as np
 
-from .cv.serializer import deserialize_json
+from .serializer import deserialize_json
 from .settings import BOUNDINGBOX
 
 
