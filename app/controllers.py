@@ -75,7 +75,7 @@ def predict(sess, x, keep_prob, logits, test_image_batch):
 @timeit
 def submit(complete_probs, path):
     """"produce an output file with predicted probabilities."""
-    now = datetime.now().strftime('%Y-%m-%d_%H:%M:%S')
+    now = datetime.now().strftime('%Y%m%d%H%M%S')
     template = pd.read_csv(
                 filepath_or_buffer=path + 'sample_submission_stg1.csv',
                 encoding='utf8',
@@ -104,7 +104,7 @@ def restore_session(sess, path):
 @timeit
 def save_session(sess, path, sav):
     """save hard trained model for future predicting."""
-    now = datetime.now().strftime('%Y-%m-%d_%H:%M:%S')
+    now = datetime.now().strftime('%Y%m%d%H%M%S')
     if not os.path.exists(path):
         os.makedirs(path)
     save_path = sav.save(sess, path + "model_{0}.ckpt".format(now))
