@@ -2,7 +2,7 @@
 
 import tensorflow as tf
 
-from ..main import EVAL
+from ..main import EVAL, TRAIN
 from ..models.cnn import ConvolutionalNeuralNet
 from ..settings import (IMAGE_PATH, IMAGE_SHAPE, BATCH_SIZE, MODEL_PATH,
                         MAX_STEPS, ALPHA, BETA)
@@ -69,7 +69,7 @@ accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
 # saver
 saver = tf.train.Saver(max_to_keep=5, var_list=tf.trainable_variables())
 
-if not EVAL:
+if TRAIN:
     # prepare data feed
     train_file_array, train_label_array, valid_file_array, valid_label_array =\
         generate_data_skeleton(root_dir=IMAGE_PATH + 'train', valid_size=.15)
@@ -119,6 +119,5 @@ elif EVAL:
     with sess:
         restore_session(sess, MODEL_PATH)
         probs = predict(sess, x, keep_prob, logits, test_image_batch)
-        input('press to produce submission.')
         submit(probs, IMAGE_PATH)
     del sess
