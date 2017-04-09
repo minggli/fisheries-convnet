@@ -99,7 +99,7 @@ if TRAIN:
         save_session(sess, path=MODEL_PATH, sav=saver)
     del sess
 
-elif EVAL:
+if EVAL:
 
     test_file_array, _ = \
         generate_data_skeleton(root_dir=IMAGE_PATH + 'test_stg1',
