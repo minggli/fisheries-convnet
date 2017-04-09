@@ -52,7 +52,7 @@ if CV_DETECT:
     # apply trained Haar Cascade classifier on test set.
 
     cascade = cv2.CascadeClassifier(HAARCASCADE + 'cascade.xml')
-    file_array = generate_data_skeleton(IMAGE_PATH)[0]
+    file_array = generate_data_skeleton(IMAGE_PATH + 'test_stg1')[0]
 
     def detectobject(path_to_image, params=HAARPARAMS, haarcascadeclf=cascade):
         original_img = cv2.imread(path_to_image, -1)
@@ -77,6 +77,8 @@ if CV_DETECT:
                   sort_keys=True,
                   indent=4,
                   ensure_ascii=False)
+
+    file_array = generate_data_skeleton(IMAGE_PATH)[0]
 
     with Pool(4) as p:
         p.map(Localizer.localize, file_array)
