@@ -64,7 +64,7 @@ if CV_DETECT:
                                         maxSize=params['maxSize'])
         filename = os.path.split(path_to_image)[1]
         img_json = serialize_json(filename, fish_detector)
-        print('processed {}'.format(path_to_image))
+        print('detecting {}'.format(path_to_image))
         return img_json
 
     output = list()

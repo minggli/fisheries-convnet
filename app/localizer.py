@@ -62,7 +62,7 @@ class Localizer:
             print('writing {}'.format(self.path))
             cv2.imwrite(self.path, self.output_image)
         elif not self.bboxes:
-            print('bypassing {}'.format(self.path))
+            print('passing {}'.format(self.path))
 
     @classmethod
     def localize(cls, path_to_image):
