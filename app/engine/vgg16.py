@@ -100,9 +100,9 @@ if TRAIN:
 
 if EVAL:
 
-    test_file_array = \
+    test_file_array, _ = \
         generate_data_skeleton(root_dir=IMAGE_PATH + 'test_stg1',
-                               valid_size=None)[0]
+                               valid_size=None)
     # no shuffling or more than 1 epoch of test set, only through once.
     test_image_batch = data_pipe(
                             test_file_array,
