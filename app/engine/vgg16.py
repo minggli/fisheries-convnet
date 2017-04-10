@@ -97,7 +97,6 @@ if TRAIN:
               train_label_batch, valid_image_batch, valid_label_batch,
               train_step, accuracy, loss)
         save_session(sess, path=MODEL_PATH, sav=saver)
-    del sess
 
 if EVAL:
 
@@ -120,4 +119,6 @@ if EVAL:
         restore_session(sess, MODEL_PATH)
         probs = predict(sess, x, keep_prob, logits, test_image_batch)
         submit(probs, IMAGE_PATH)
-    del sess
+
+# delete session manually to prevent exit error.
+del sess
