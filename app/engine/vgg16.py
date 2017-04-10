@@ -34,12 +34,12 @@ conv_layer_11 = cnn.add_conv_layer(max_pool_4, [[3, 3, 96, 96], [96]])
 conv_layer_12 = cnn.add_conv_layer(conv_layer_11, [[3, 3, 96, 96], [96]])
 conv_layer_13 = cnn.add_conv_layer(conv_layer_12, [[3, 3, 96, 96], [96]])
 max_pool_5 = cnn.add_pooling_layer(conv_layer_13)
-fc1 = cnn.add_dense_layer(max_pool_5, [[3 * 5 * 96, 2048], [2048],
+fc1 = cnn.add_dense_layer(max_pool_5, [[3 * 5 * 96, 1024], [1024],
                                        [-1, 3 * 5 * 96]])
 # drop_out_layer_1 = cnn.add_drop_out_layer(fc1, keep_prob)
-fc2 = cnn.add_dense_layer(fc1, [[2048, 1024], [1024], [-1, 2048]])
+fc2 = cnn.add_dense_layer(fc1, [[1024, 512], [512], [-1, 1024]])
 # drop_out_layer_2 = cnn.add_drop_out_layer(fc2, keep_prob)
-logits = cnn.add_read_out_layer(fc2, [[1024, 8], [8]])
+logits = cnn.add_read_out_layer(fc2, [[512, 8], [8]])
 # [batch_size, 8]
 
 # default loss function
@@ -100,17 +100,17 @@ if TRAIN:
 
 if EVAL:
 
-    test_file_array, _ = \
+    test_file_array = \
         generate_data_skeleton(root_dir=IMAGE_PATH + 'test_stg1',
-                               valid_size=None)
+                               valid_size=None)[0]
     # no shuffling or more than 1 epoch of test set, only through once.
-    test_image_batch, _ = data_pipe(
+    test_image_batch = data_pipe(
                             test_file_array,
                             _,
                             num_epochs=1,
                             shape=IMAGE_SHAPE,
                             batch_size=BATCH_SIZE,
-                            shuffle=False)
+                            shuffle=False)[0]
 
     # only need to initiate data pipeline stored in local variable
     sess.run(tf.local_variables_initializer())
