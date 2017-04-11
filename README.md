@@ -1,8 +1,9 @@
-# Image Classification - 8 Species of Fish
-Convolutional Neutral Network with architecture similar to VGG-16.
-This CNN contains 16 layers in total with different set of hyper-parameters.
+# Image Recognition - 6 Species of Fish
+The problem to solve is to classify 6 species of fish in real world images with varying backgrounds
 
-It also includes work using OpenCV to detect wanted objects for improving results.
+It applies Haar Cascade object detection algorithm and 16-layer Convolutional Neural Network.
+
+The CNN has architecture similar to that of VGG-16, with different hyper-parameters.
 
 It contains work by Ming Li for Kaggle Challenge.
 
