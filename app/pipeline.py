@@ -6,6 +6,7 @@ data pipeline from image root folder to processed tensors of train test batches
 for images and labels
 """
 import os
+import functools
 import collections
 import numpy as np
 import pandas as pd
@@ -145,6 +146,7 @@ def data_pipe(paths_to_image,
 
 def multithreading(func):
     """decorator using tensorflow threading ability."""
+    @functools.wraps(func)
     def wrapper(*args, **kwargs):
         coord = tf.train.Coordinator()
         threads = tf.train.start_queue_runners(coord=coord)

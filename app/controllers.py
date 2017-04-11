@@ -27,8 +27,8 @@ def timeit(func):
     return wrapper
 
 
-@multithreading
 @timeit
+@multithreading
 def train(n, sess, x, _y, keep_prob, train_image_batch, train_label_batch,
           valid_image_batch, valid_label_batch, optimiser, metric, loss):
     """train neural network and produce accuracies with validation set."""
@@ -53,8 +53,8 @@ def train(n, sess, x, _y, keep_prob, train_image_batch, train_label_batch,
                                              n))
 
 
-@multithreading
 @timeit
+@multithreading
 def predict(sess, x, keep_prob, logits, test_image_batch):
     """predict test set using graph previously trained and saved."""
     complete_probs = list()
