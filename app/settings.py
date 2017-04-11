@@ -32,7 +32,8 @@ SYNSET_ID_NEG = {
 }
 
 HAARPARAMS = dict(
-    minNeighbors=3,
-    minSize=(50, 50),
+    scaleFactor=7,
+    minNeighbors=0,
+    minSize=(80, 80),
     maxSize=(500, 500)
 )

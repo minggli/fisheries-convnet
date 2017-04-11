@@ -59,12 +59,17 @@ if CV_DETECT:
         grayscale = cv2.cvtColor(original_img, cv2.COLOR_BGR2GRAY)
         fish_detector = haarcascadeclf.detectMultiScale(
                                         grayscale,
+                                        scaleFactor=params['scaleFactor'],
                                         minNeighbors=params['minNeighbors'],
                                         minSize=params['minSize'],
                                         maxSize=params['maxSize'])
         filename = os.path.split(path_to_image)[1]
         img_json = serialize_json(filename, fish_detector)
-        print('detecting {}'.format(path_to_image))
+        if img_json is not None:
+            n = len(img_json['annotations'])
+        elif img_json is None:
+            n = 0
+        print('detected {0} objects from {1}'.format(n, path_to_image))
         return img_json
 
     output = list()

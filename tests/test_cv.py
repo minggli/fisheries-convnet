@@ -6,10 +6,10 @@ using pre-trained front face and eye detector to identify a totally random face
 """
 import cv2
 import random
-
 from app.settings import CV_SAMPLE_PATH, HAARCASCADE, HAARPARAMS
 from app.pipeline import generate_data_skeleton
 
+# random.seed(3)
 file_arary = generate_data_skeleton(CV_SAMPLE_PATH + 'pos')[0]
 
 cascade = cv2.CascadeClassifier(HAARCASCADE + 'cascade.xml')
@@ -19,6 +19,7 @@ img = cv2.imread(random.choice(file_arary), -1)
 gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 
 fish = cascade.detectMultiScale(gray,
+                                scaleFactor=HAARPARAMS['scaleFactor'],
                                 minNeighbors=HAARPARAMS['minNeighbors'],
                                 minSize=HAARPARAMS['minSize'],
                                 maxSize=HAARPARAMS['maxSize']
