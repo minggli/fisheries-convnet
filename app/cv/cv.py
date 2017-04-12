@@ -34,7 +34,7 @@ from ..settings import (HAARCASCADE, SYNSET_ID_POS, CV_IM_SAMPLE_PATH,
 
 if FETCH:
     sample_pos = generate_sample_skeleton(SYNSET_ID_POS, 5e3, BASE_URL)
-    sample_neg = generate_sample_skeleton(SYNSET_ID_NEG, 5e3, BASE_URL)
+    sample_neg = generate_sample_skeleton(SYNSET_ID_NEG, 1e4, BASE_URL)
 
     batch_retrieve(func=retrieve_image,
                    iterable=sample_neg,

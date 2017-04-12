@@ -3,6 +3,7 @@
 # Convolutional Neural Network
 MODEL_PATH = './trained_models/'
 IMAGE_PATH = './data/localized_images/'
+# IMAGE_PATH = './data/original_images/'
 IMAGE_SHAPE = (90, 160, 3)
 # IMAGE_SHAPE = (720, 1280, 3)
 BATCH_SIZE = 64
@@ -28,7 +29,8 @@ SYNSET_ID_POS = {
 SYNSET_ID_NEG = {
                     'ocean': 'n09376198',
                     'people': 'n07942152',
-                    'poop deck': 'n03982642'
+                    'poop deck': 'n03982642',
+                    'equipment': 'n03294048'
 }
 
 HAARPARAMS = dict(

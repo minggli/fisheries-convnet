@@ -48,16 +48,16 @@ cross_entropy = \
 loss = tf.reduce_mean(cross_entropy)
 
 # applying label weights to loss function
-class_weight = tf.constant([[0.545, 0.947, 0.969, 0.982, 0.877, 0.921,
-                             0.953, 0.806]])
-weight_per_label = tf.transpose(tf.matmul(_y, tf.transpose(class_weight)))
-loss = tf.reduce_mean(tf.multiply(weight_per_label, cross_entropy))
+# class_weight = tf.constant([[0.545, 0.947, 0.969, 0.982, 0.877, 0.921,
+#                              0.953, 0.806]])
+# weight_per_label = tf.transpose(tf.matmul(_y, tf.transpose(class_weight)))
+# loss = tf.reduce_mean(tf.multiply(weight_per_label, cross_entropy))
 
 # add L2 regularization on weights from readout layer
-out_weights = [var for var in tf.trainable_variables()
-               if var.name.startswith('Variable_')][-2]
-regularizer = tf.nn.l2_loss(out_weights)
-loss = tf.reduce_mean(loss + BETA * regularizer)
+# out_weights = [var for var in tf.trainable_variables()
+#                if var.name.startswith('Variable_')][-2]
+# regularizer = tf.nn.l2_loss(out_weights)
+# loss = tf.reduce_mean(loss + BETA * regularizer)
 
 # train Ops
 train_step = tf.train.RMSPropOptimizer(learning_rate=ALPHA).minimize(loss)
