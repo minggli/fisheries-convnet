@@ -6,11 +6,11 @@ using pre-trained front face and eye detector to identify a totally random face
 """
 import cv2
 import random
-from app.settings import CV_SAMPLE_PATH, HAARCASCADE, HAARPARAMS
+from app.settings import HAARCASCADE, HAARPARAMS, IMAGE_PATH
 from app.pipeline import generate_data_skeleton
 
 # random.seed(3)
-file_arary = generate_data_skeleton(CV_SAMPLE_PATH + 'pos')[0]
+file_arary = generate_data_skeleton(IMAGE_PATH + 'test_stg1')[0]
 
 cascade = cv2.CascadeClassifier(HAARCASCADE + 'cascade.xml')
 

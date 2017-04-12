@@ -52,7 +52,7 @@ if CV_DETECT:
     # apply trained Haar Cascade classifier on test set.
 
     cascade = cv2.CascadeClassifier(HAARCASCADE + 'cascade.xml')
-    file_array = generate_data_skeleton(IMAGE_PATH + 'test_stg1')[0]
+    file_array = generate_data_skeleton(IMAGE_PATH)[0]
 
     def detectobject(path_to_image, params=HAARPARAMS, haarcascadeclf=cascade):
         original_img = cv2.imread(path_to_image, -1)
@@ -63,8 +63,7 @@ if CV_DETECT:
                                         minNeighbors=params['minNeighbors'],
                                         minSize=params['minSize'],
                                         maxSize=params['maxSize'])
-        filename = os.path.split(path_to_image)[1]
-        img_json = serialize_json(filename, fish_detector)
+        img_json = serialize_json(path_to_image, fish_detector)
         if img_json is not None:
             n = len(img_json['annotations'])
         elif img_json is None:

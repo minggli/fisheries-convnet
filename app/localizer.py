@@ -27,7 +27,9 @@ class Localizer:
     def _set_bboxes(self):
         try:
             self.bboxes = \
-                deserialize_json(BOUNDINGBOX)[self.fname]['annotations']
+                deserialize_json(BOUNDINGBOX,
+                                 ext=('test.json')
+                                 )[self.path]['annotations']
         except KeyError:
             self.bboxes = None
 

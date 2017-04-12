@@ -77,7 +77,7 @@ def submit(complete_probs, path):
     """"produce an output file with predicted probabilities."""
     now = datetime.now().strftime('%Y%m%d%H%M%S')
     template = pd.read_csv(
-                filepath_or_buffer=path + 'sample_submission_stg1.csv',
+                filepath_or_buffer=path + 'sample_submission_stg2.csv',
                 encoding='utf8',
                 index_col=0)
     df = pd.DataFrame(
