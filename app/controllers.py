@@ -98,7 +98,7 @@ def restore_session(sess, path):
     eval_saver = \
         tf.train.import_meta_graph(tf.train.latest_checkpoint(path) + '.meta')
     eval_saver.restore(sess, tf.train.latest_checkpoint(path))
-    print('Restore successful.')
+    print('{} restored successfully.'.format(tf.train.latest_checkpoint(path)))
 
 
 @timeit
