@@ -14,7 +14,8 @@ import uuid
 from multiprocessing import Pool
 from itertools import repeat
 from socket import timeout
-from requests.exceptions import ConnectTimeout, ConnectionError
+from requests.exceptions import (ConnectTimeout, ConnectionError,
+                                 ProtocolError, Timeout, ReadTimeoutError)
 
 from ..controllers import timeit
 
@@ -61,7 +62,7 @@ def retrieve_image(image_url, path):
                          allow_redirects=False,
                          timeout=5,
                          stream=True)
-    except (timeout, Exception) as e:
+    except (timeout, Timeout, Exception, ProtocolError, ReadTimeoutError) as e:
         return None
     code = r.status_code
     print(code, image_url, flush=True)
