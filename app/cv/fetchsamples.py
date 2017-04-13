@@ -14,8 +14,7 @@ import uuid
 from multiprocessing import Pool
 from itertools import repeat
 from socket import timeout
-from requests.exceptions import (ConnectTimeout, ConnectionError, Timeout,
-                                 ReadTimeout)
+from requests.exceptions import (ConnectTimeout, ConnectionError, Timeout)
 
 from ..controllers import timeit
 
@@ -28,7 +27,7 @@ def generate_sample_skeleton(synset_dict, sample_size, base_url):
         try:
             r = requests.get(base_url.format(wnid),
                              allow_redirects=True,
-                             timeout=5)
+                             timeout=(15, 30))
         except (ConnectTimeout, ConnectionError) as e:
             raise RuntimeError('no active Internet connection.')
         synset_urls.append(r.text.split('\r\n'))
@@ -60,9 +59,9 @@ def retrieve_image(image_url, path):
     try:
         r = requests.get(image_url,
                          allow_redirects=False,
-                         timeout=5,
+                         timeout=(15, 30),
                          stream=True)
-    except (timeout, Timeout, Exception, ReadTimeout) as e:
+    except (timeout, Timeout, Exception) as e:
         return None
     code = r.status_code
     print(code, image_url, flush=True)
