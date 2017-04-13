@@ -29,12 +29,16 @@ from ..pipeline import generate_data_skeleton
 from ..serializer import serialize_json
 from ..settings import (HAARCASCADE, SYNSET_ID_POS, CV_IM_SAMPLE_PATH,
                         SYNSET_ID_NEG, BASE_URL, IMAGE_PATH, BOUNDINGBOX,
-                        HAARPARAMS)
+                        HAARPARAMS, SYNSET_NUM_POS, SYNSET_NUM_NEG)
 
 
 if FETCH:
-    sample_pos = generate_sample_skeleton(SYNSET_ID_POS, 5e3, BASE_URL)
-    sample_neg = generate_sample_skeleton(SYNSET_ID_NEG, 1e4, BASE_URL)
+    sample_pos = generate_sample_skeleton(SYNSET_ID_POS,
+                                          SYNSET_NUM_POS,
+                                          BASE_URL)
+    sample_neg = generate_sample_skeleton(SYNSET_ID_NEG,
+                                          SYNSET_NUM_NEG,
+                                          BASE_URL)
 
     batch_retrieve(func=retrieve_image,
                    iterable=sample_neg,
