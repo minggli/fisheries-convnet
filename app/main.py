@@ -14,3 +14,8 @@ if __name__ == '__main__':
         from .cv import cv
     elif TRAIN or EVAL:
         from .engine import vgg16
+    else:
+        raise ValueError('missing mode flags.\n\n'
+                         'require one of following:\n'
+                         'FETCH, CV_TRAIN, CV_DETECT for computer vsion\n'
+                         'TRAIN, EVAL for convolutional neural net.')
