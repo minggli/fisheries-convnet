@@ -32,6 +32,9 @@ SYNSET_ID_NEG = {
                     'poop deck': 'n03982642',
                     'equipment': 'n03294048'
 }
+SYNSET_NUM_POS = 5e3
+SYNSET_NUM_NEG = 1e4
+
 
 HAARPARAMS = dict(
     scaleFactor=5,
