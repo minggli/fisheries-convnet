@@ -15,8 +15,8 @@ BETA = 1e-2
 HAARCASCADE = './app/cv/fishcascade/'
 BOUNDINGBOX = './app/cv/bb/'
 BASE_URL = 'http://image-net.org/api/text/imagenet.synset.geturls?wnid={0}'
-CV_SAMPLE_PATH = './data/native_cv_samples/'
-CV_IM_SAMPLE_PATH = './data/cv_samples/'
+# CV_SAMPLE_PATH = './data/native_cv_samples/'
+CV_SAMPLE_PATH = './data/cv_samples/'
 SYNSET_ID_POS = {
                     'Tuna_Bluefin': 'n02627292',
                     'Tuna_Yellowfin': 'n02627532',
@@ -30,12 +30,12 @@ SYNSET_ID_NEG = {
                     'ocean': 'n09376198',
                     'people': 'n07942152',
                     'poop deck': 'n03982642',
-                    'equipment': 'n03294048'
+                    'equipment': 'n03294048',
+                    'sea boat': 'n04158807',
+                    'waves': 'n13868944'
 }
-SYNSET_NUM_POS = 5e3
+SYNSET_NUM_POS = 10
 SYNSET_NUM_NEG = 1e4
-
-
 HAARPARAMS = dict(
     scaleFactor=5,
     # 0 minNeighbors 0 so that there is minimum change missing fish.

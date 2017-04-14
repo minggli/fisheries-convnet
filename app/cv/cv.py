@@ -27,7 +27,7 @@ from ..main import FETCH, CV_TRAIN, CV_DETECT
 from ..localizer import Localizer
 from ..pipeline import generate_data_skeleton
 from ..serializer import serialize_json
-from ..settings import (HAARCASCADE, SYNSET_ID_POS, CV_IM_SAMPLE_PATH,
+from ..settings import (HAARCASCADE, SYNSET_ID_POS, CV_SAMPLE_PATH,
                         SYNSET_ID_NEG, BASE_URL, IMAGE_PATH, BOUNDINGBOX,
                         HAARPARAMS, SYNSET_NUM_POS, SYNSET_NUM_NEG)
 
@@ -42,10 +42,10 @@ if FETCH:
 
     batch_retrieve(func=retrieve_image,
                    iterable=sample_neg,
-                   path=CV_IM_SAMPLE_PATH + 'neg')
+                   path=CV_SAMPLE_PATH + 'neg')
     batch_retrieve(func=retrieve_image,
                    iterable=sample_pos,
-                   path=CV_IM_SAMPLE_PATH + 'pos')
+                   path=CV_SAMPLE_PATH + 'pos')
 
 if CV_TRAIN:
     from . import description

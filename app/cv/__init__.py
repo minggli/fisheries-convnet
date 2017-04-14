@@ -1,8 +1,8 @@
 import os
 
-from ..settings import HAARCASCADE, CV_IM_SAMPLE_PATH
+from ..settings import HAARCASCADE, CV_SAMPLE_PATH
 
-make = [HAARCASCADE, CV_IM_SAMPLE_PATH + 'neg', CV_IM_SAMPLE_PATH + 'pos']
+make = [HAARCASCADE, CV_SAMPLE_PATH + 'neg', CV_SAMPLE_PATH + 'pos']
 
 for directory in make:
     try:
