@@ -14,6 +14,7 @@ in test set.
 """
 
 import os
+import imghdr
 import cv2
 
 from ..serializer import deserialize_json
@@ -48,11 +49,18 @@ f.close()
 file_structure = folder_traverse(os.path.join(os.path.realpath('.'),
                                  CV_SAMPLE_PATH + 'neg/'))
 f = open(os.path.dirname(os.path.realpath(__file__)) + '/negatives.dat', 'w')
+n = 0
 for folder, filelist in file_structure.items():
     for filename in filelist:
-        # use OpenCV I/O to make sure correct jpeg file
-        img = cv2.imread(folder + '/' + filename, -1)
-        cv2.imwrite(folder + '/' + filename, img)
-        string = '{0}/{1}\n'.format(folder, filename)
-        f.write(string)
+        # if the file is readable in recognisable formats
+        check = imghdr.what(folder + '/' + filename)
+        if check:
+            # use OpenCV I/O to make sure correct jpeg file
+            img = cv2.imread(folder + '/' + filename, -1)
+            cv2.imwrite(folder + '/' + filename, img)
+            string = '{0}/{1}\n'.format(folder, filename)
+            f.write(string)
+        elif not check:
+            n += 1
 f.close()
+print('{0} negative samples are found to be corrupted.'.format(n))
