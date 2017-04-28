@@ -37,9 +37,9 @@ SYNSET_ID_NEG = {
 SYNSET_NUM_POS = 10
 SYNSET_NUM_NEG = 1e4
 HAARPARAMS = dict(
-    scaleFactor=5,
+    scaleFactor=6,
     # 0 minNeighbors 0 so that there is minimum change missing fish.
-    minNeighbors=0,
+    minNeighbors=2,
     minSize=(50, 50),
-    maxSize=(500, 500)
+    maxSize=(700, 700)
 )
